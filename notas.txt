@@ -1,0 +1,5 @@
+Mostrar Idioms y posteriormente una notacion concreta con un ejemplo concreto y real, en el mismo contexto todos los ejemplos, y tambien incluir como seria la especificacion en tabla.
+Mostrar la ventaja de los idioms.
+
+Ejemplos de combinaciones de idioms, mostrar la utilidad de los idioms combinados, analisis comparativo de las herramientas existentes
+

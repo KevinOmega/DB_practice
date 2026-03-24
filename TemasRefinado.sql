@@ -1,0 +1,1340 @@
+
+DROP TABLE IF EXISTS unicen.equivalencia_materia_unicen;
+CREATE TABLE unicen.equivalencia_materia_unicen (
+    id_equivalencia_materia_unicen SERIAL PRIMARY KEY,
+    id_plan_estudio_origen integer,
+    id_materia_origen integer,
+    id_sede_origen integer,
+    id_plan_estudio_destino integer,
+    id_materia_destino integer,
+    id_sede_destino integer,
+    estado character varying,
+    CHECK (
+        estado IN ('ACTIVO', 'INACTIVO')
+    )
+);
+
+ALTER TABLE unicen.equivalencia_materia_unicen ADD CONSTRAINT unique_equivalencia UNIQUE (id_plan_estudio_origen, id_materia_origen, id_sede_origen, id_plan_estudio_destino, id_materia_destino, id_sede_destino);
+
+
+
+select * from unicen.tema_unicen where id_plan_estudio = 113 and id_sede = 1;
+
+DROP FUNCTION IF EXISTS unicen.obtener_materias_por_carrera(integer, integer);
+CREATE OR REPLACE FUNCTION unicen.obtener_materias_por_carrera(p_id_carrera integer, p_id_sede integer)
+RETURNS TABLE(id_materia integer, id_plan_estudio integer, id_sede integer, nombre character varying) AS $$
+BEGIN
+    RETURN QUERY
+        select ma.id_materia, pm.id_plan_estudio, ma.id_sede, ma.nombre
+from unicen.materia ma JOIN unicen.plan_materia pm ON ma.id_materia = pm.id_materia
+where
+    pm.id_plan_estudio IN (
+        SELECT pe.id_plan_estudio
+        FROM unicen.plan_estudio pe
+        WHERE pe.id_carrera = p_id_carrera
+            AND pe.id_sede = p_id_sede
+            AND pe.activo = 'ACTIVO'
+    ) AND pm.id_sede = p_id_sede and ma.id_sede = p_id_sede ORDER BY ma.nombre ASC;
+END;
+$$ LANGUAGE plpgsql;
+
+
+select nombre from obtener_materias_por_carrera(81, 1)
+EXCEPT
+select nombre from obtener_materias_por_carrera(20, 3);
+
+select * from obtener_materias_por_carrera(81, 1);
+
+SELECT * FROM unicen.carrera where nombre = 'MEDICINA';
+
+select * from unicen.plan_estudio where id_carrera = 54  and activo = 'ACTIVO';
+
+-- 1 = 83
+-- 3 = 105
+
+select * from unicen.equivalencia_materia_unicen where id_plan_estudio_destino = 105 and id_materia_destino =3;
+
+-------- MEDICINA ----------------
+-- Insertar equivalencias de materias de Medicina entre sede 1 (plan 83) y sede 3 (plan 105)
+INSERT INTO unicen.equivalencia_materia_unicen 
+(id_plan_estudio_origen, id_materia_origen, id_sede_origen, 
+ id_plan_estudio_destino, id_materia_destino, id_sede_destino, estado)
+VALUES
+-- Administración de Hospitales
+(83, 1082, 1, 105, 1427, 3, 'ACTIVO'),
+-- Anatomía Humana I
+(83, 1026, 1, 105, 1283, 3, 'ACTIVO'),
+-- Anatomía Humana II
+(83, 1030, 1, 105, 1371, 3, 'ACTIVO'),
+-- Anestesiología
+(83, 1054, 1, 105, 1399, 3, 'ACTIVO'),
+-- Biofísica
+(83, 1031, 1, 105, 1372, 3, 'ACTIVO'),
+-- Bioquímica I
+(83, 1034, 1, 105, 1378, 3, 'ACTIVO'),
+-- Bioquímica II
+(83, 1040, 1, 105, 1385, 3, 'ACTIVO'),
+-- Cirugía I
+(83, 1061, 1, 105, 1406, 3, 'ACTIVO'),
+-- Cirugía II
+(83, 1068, 1, 105, 1413, 3, 'ACTIVO'),
+-- Cirugía III
+(83, 1075, 1, 105, 1420, 3, 'ACTIVO'),
+-- Clínica Gineco-Obstetra
+(83, 1214, 1, 105, 2023, 3, 'ACTIVO'),
+-- Clínica Médica
+(83, 1211, 1, 105, 2020, 3, 'ACTIVO'),
+-- Clínica Pediátrica
+(83, 1213, 1, 105, 2022, 3, 'ACTIVO'),
+-- Clínica Quirúrgica
+(83, 1212, 1, 105, 2021, 3, 'ACTIVO'),
+-- Dermatología
+(83, 1083, 1, 105, 1428, 3, 'ACTIVO'),
+-- Embriología
+(83, 1032, 1, 105, 1373, 3, 'ACTIVO'),
+-- Epidemiología
+(83, 1069, 1, 105, 1414, 3, 'ACTIVO'),
+-- Ética Médica
+(83, 1041, 1, 105, 1386, 3, 'ACTIVO'),
+-- Farmacología y Terapéutica I
+(83, 1047, 1, 105, 1392, 3, 'ACTIVO'),
+-- Farmacología y Terapéutica II
+(83, 1055, 1, 105, 1400, 3, 'ACTIVO'),
+-- Fisiología I
+(83, 1035, 1, 105, 1379, 3, 'ACTIVO'),
+-- Fisiología II
+(83, 1042, 1, 105, 1387, 3, 'ACTIVO'),
+-- Fisiopatología I
+(83, 1048, 1, 105, 1393, 3, 'ACTIVO'),
+-- Fisiopatología II
+(83, 1056, 1, 105, 1401, 3, 'ACTIVO'),
+-- Genética
+(83, 1027, 1, 105, 1284, 3, 'ACTIVO'),
+-- Ginecología y Obstetricia I
+(83, 1062, 1, 105, 1407, 3, 'ACTIVO'),
+-- Ginecología y Obstetricia II
+(83, 1070, 1, 105, 1415, 3, 'ACTIVO'),
+-- Ginecología y Obstetricia III
+(83, 1076, 1, 105, 1421, 3, 'ACTIVO'),
+-- Ginecología y Obstetricia IV
+(83, 1084, 1, 105, 1429, 3, 'ACTIVO'),
+-- Histología I
+(83, 1028, 1, 105, 1285, 3, 'ACTIVO'),
+-- Histología II
+(83, 1033, 1, 105, 1374, 3, 'ACTIVO'),
+-- Idioma Nativo I
+(83, 1089, 1, 105, 1286, 3, 'ACTIVO'),
+-- Idioma Nativo II
+(83, 1090, 1, 105, 1440, 3, 'ACTIVO'),
+-- Imagenología I
+(83, 1049, 1, 105, 1394, 3, 'ACTIVO'),
+-- Imagenología II
+(83, 1057, 1, 105, 1402, 3, 'ACTIVO'),
+-- Informática Médica
+(83, 1029, 1, 105, 1287, 3, 'ACTIVO'),
+-- Inglés I
+(83, 187, 1, 105, 159, 3, 'ACTIVO'),
+-- Inglés II
+(83, 190, 1, 105, 163, 3, 'ACTIVO'),
+-- Inglés III
+(83, 191, 1, 105, 164, 3, 'ACTIVO'),
+-- Inmunología I
+(83, 1050, 1, 105, 1395, 3, 'ACTIVO'),
+-- Inmunología II
+(83, 1058, 1, 105, 1403, 3, 'ACTIVO'),
+-- Introducción a la Investigación Científica
+(83, 192, 1, 105, 165, 3, 'ACTIVO'),
+-- Medicina Interna I - Cardiología
+(83, 1063, 1, 105, 1408, 3, 'ACTIVO'),
+-- Medicina Interna II - Endocrinología
+(83, 1085, 1, 105, 1430, 3, 'ACTIVO'),
+-- Medicina Interna II - Gastroenterología
+(83, 1077, 1, 105, 1422, 3, 'ACTIVO'),
+-- Medicina Interna II - Hematología
+(83, 1086, 1, 105, 1431, 3, 'ACTIVO'),
+-- Medicina Interna II - Infectología
+(83, 1078, 1, 105, 1423, 3, 'ACTIVO'),
+-- Medicina Interna I - Nefrología
+(83, 1071, 1, 105, 1416, 3, 'ACTIVO'),
+-- Medicina Interna I - Neumología
+(83, 1064, 1, 105, 1409, 3, 'ACTIVO'),
+-- Medicina Interna I - Reumatología
+(83, 1072, 1, 105, 1417, 3, 'ACTIVO'),
+-- Medicina Legal
+(83, 1087, 1, 105, 1432, 3, 'ACTIVO'),
+-- Microbiología I
+(83, 1036, 1, 105, 1381, 3, 'ACTIVO'),
+-- Microbiología II
+(83, 1043, 1, 105, 1388, 3, 'ACTIVO'),
+-- Neurología y Neurocirugía
+(83, 1079, 1, 105, 1424, 3, 'ACTIVO'),
+-- Oftalmología
+(83, 1065, 1, 105, 1410, 3, 'ACTIVO'),
+-- Otorrinolaringología
+(83, 1073, 1, 105, 1418, 3, 'ACTIVO'),
+-- Parasitología
+(83, 1044, 1, 105, 1389, 3, 'ACTIVO'),
+-- Patología I
+(83, 1037, 1, 105, 1382, 3, 'ACTIVO'),
+-- Patología II
+(83, 1045, 1, 105, 1390, 3, 'ACTIVO'),
+-- Patología III
+(83, 1051, 1, 105, 1396, 3, 'ACTIVO'),
+-- Pediatría I
+(83, 1066, 1, 105, 1411, 3, 'ACTIVO'),
+-- Pediatría II
+(83, 1074, 1, 105, 1419, 3, 'ACTIVO'),
+-- Pediatría III
+(83, 1080, 1, 105, 1425, 3, 'ACTIVO'),
+-- Psicología Médica
+(83, 1038, 1, 105, 1383, 3, 'ACTIVO'),
+-- Psiquiatría
+(83, 1088, 1, 105, 1433, 3, 'ACTIVO'),
+-- Salud Pública I
+(83, 1039, 1, 105, 1384, 3, 'ACTIVO'),
+-- Salud Pública II
+(83, 1046, 1, 105, 1391, 3, 'ACTIVO'),
+-- Salud Pública III
+(83, 1052, 1, 105, 1397, 3, 'ACTIVO'),
+-- Semiología General y Especial I
+(83, 1053, 1, 105, 1398, 3, 'ACTIVO'),
+-- Semiología General y Especial II
+(83, 1059, 1, 105, 1404, 3, 'ACTIVO'),
+-- Técnica Quirúrgica
+(83, 1060, 1, 105, 1405, 3, 'ACTIVO'),
+-- Traumatología y Ortopedia
+(83, 1067, 1, 105, 1412, 3, 'ACTIVO'),
+-- Urología
+(83, 1081, 1, 105, 1426, 3, 'ACTIVO');
+
+
+
+SELECT * FROM unicen.tema_unicen where id_plan_estudio = 83 and id_sede = 1;
+SELECT * FROM unicen.tema_unicen where id_plan_estudio = 105 and id_sede = 3;
+
+
+
+-------- INGENIERÍA FINANCIERA ----------------
+-- Insertar equivalencias de materias de Ingeniería Financiera entre sede 1 (plan 113) y sede 3 (plan 136)
+INSERT INTO unicen.equivalencia_materia_unicen 
+(id_plan_estudio_origen, id_materia_origen, id_sede_origen, 
+ id_plan_estudio_destino, id_materia_destino, id_sede_destino, estado)
+VALUES
+-- Administración Financiera
+(113, 1589, 1, 136, 1827, 3, 'ACTIVO'),
+-- Administración I
+(113, 1331, 1, 136, 1579, 3, 'ACTIVO'),
+-- Administración II
+(113, 1364, 1, 136, 1598, 3, 'ACTIVO'),
+-- Administración Pública
+(113, 1469, 1, 136, 1815, 3, 'ACTIVO'),
+-- Álgebra
+(113, 1338, 1, 136, 1580, 3, 'ACTIVO'),
+-- Análisis e Interpretación de Estados Financieros
+(113, 1382, 1, 136, 1650, 3, 'ACTIVO'),
+-- Auditoría Financiera I
+(113, 1399, 1, 136, 1684, 3, 'ACTIVO'),
+-- Auditoría Financiera II
+(113, 1409, 1, 136, 1697, 3, 'ACTIVO'),
+-- Cálculo I
+(113, 1347, 1, 136, 1584, 3, 'ACTIVO'),
+-- Comercio Internacional I
+(113, 1472, 1, 136, 1686, 3, 'ACTIVO'),
+-- Computación I
+(113, 1127, 1, 136, 1779, 3, 'ACTIVO'),
+-- Computación II
+(113, 1340, 1, 136, 1782, 3, 'ACTIVO'),
+-- Contabilidad Agropecuaria
+(113, 1367, 1, 136, 1608, 3, 'ACTIVO'),
+-- Contabilidad Básica
+(113, 1345, 1, 136, 1578, 3, 'ACTIVO'),
+-- Contabilidad Computarizada
+(113, 1355, 1, 136, 1586, 3, 'ACTIVO'),
+-- Contabilidad de Costos
+(113, 1357, 1, 136, 1591, 3, 'ACTIVO'),
+-- Contabilidad de Entidades Financieras
+(113, 1386, 1, 136, 1655, 3, 'ACTIVO'),
+-- Contabilidad de Servicios
+(113, 1368, 1, 136, 1612, 3, 'ACTIVO'),
+-- Contabilidad de Sociedades
+(113, 1361, 1, 136, 1596, 3, 'ACTIVO'),
+-- Contabilidad Integrada
+(113, 1372, 1, 136, 1619, 3, 'ACTIVO'),
+-- Contabilidad Intermedia
+(113, 1352, 1, 136, 1582, 3, 'ACTIVO'),
+-- Contabilidad Minera y Petrolera
+(113, 1375, 1, 136, 1625, 3, 'ACTIVO'),
+-- Costos para Decisiones
+(113, 1377, 1, 136, 1632, 3, 'ACTIVO'),
+-- Derecho Empresarial y Comercial
+(113, 1582, 1, 136, 1843, 3, 'ACTIVO'),
+-- Derecho Tributario y Financiero
+(113, 1512, 1, 136, 1667, 3, 'ACTIVO'),
+-- Econometría
+(113, 1511, 1, 136, 1666, 3, 'ACTIVO'),
+-- Economía General y Política
+(113, 1359, 1, 136, 1587, 3, 'ACTIVO'),
+-- Elementos de Gestión Financiera
+(113, 1451, 1, 136, 1780, 3, 'ACTIVO'),
+-- Estadística
+(113, 1634, 1, 136, 1606, 3, 'ACTIVO'),
+-- Estadística Avanzada
+(113, 1408, 1, 136, 1621, 3, 'ACTIVO'),
+-- Finanzas I
+(113, 1401, 1, 136, 1754, 3, 'ACTIVO'),
+-- Finanzas II
+(113, 1442, 1, 136, 1764, 3, 'ACTIVO'),
+-- Finanzas Internacionales
+(113, 1597, 1, 136, 1785, 3, 'ACTIVO'),
+-- Finanzas Públicas
+(113, 1458, 1, 136, 1788, 3, 'ACTIVO'),
+-- Gabinete de Contabilidad
+(113, 1387, 1, 136, 1659, 3, 'ACTIVO'),
+-- Gabinete de Costos
+(113, 1388, 1, 136, 1665, 3, 'ACTIVO'),
+-- Gestión de Emprendimientos
+(113, 1348, 1, 136, 1746, 3, 'ACTIVO'),
+-- Gestión del Capital Humano
+(113, 1584, 1, 136, 1696, 3, 'ACTIVO'),
+-- Introducción a la Investigación Científica
+(113, 1343, 1, 136, 1771, 3, 'ACTIVO'),
+-- Investigación de Operaciones I
+(113, 1418, 1, 136, 1626, 3, 'ACTIVO'),
+-- Macroeconomía
+(113, 1423, 1, 136, 1631, 3, 'ACTIVO'),
+-- Matemática Financiera
+(113, 1394, 1, 136, 1611, 3, 'ACTIVO'),
+-- Mercado de Valores
+(113, 1440, 1, 136, 1760, 3, 'ACTIVO'),
+-- Metodología de la Investigación Científica
+(113, 1169, 1, 136, 1722, 3, 'ACTIVO'),
+-- Microeconomía
+(113, 1400, 1, 136, 1615, 3, 'ACTIVO'),
+-- Modelos de Programación Financiera
+(113, 1459, 1, 136, 1792, 3, 'ACTIVO'),
+-- Modelos Financieros
+(113, 1447, 1, 136, 1774, 3, 'ACTIVO'),
+-- Organización y Métodos
+(113, 1379, 1, 136, 1641, 3, 'ACTIVO'),
+-- Práctica Pre-Profesional (IFI)
+(113, 1461, 1, 136, 1797, 3, 'ACTIVO'),
+-- Preparación y Evaluación de Proyectos
+(113, 1491, 1, 136, 1729, 3, 'ACTIVO'),
+-- Presupuestos
+(113, 1365, 1, 136, 1600, 3, 'ACTIVO'),
+-- Seminario de Actualización (IFI)
+(113, 1464, 1, 136, 1801, 3, 'ACTIVO');
+
+DELETE FROM unicen.equivalencia_materia_unicen
+WHERE id_plan_estudio_origen = 113 AND id_sede_origen = 1 AND id_plan_estudio_destino = 136 AND id_sede_destino = 3;
+
+DELETE FROM unicen.tema_unicen
+WHERE id_plan_estudio = 136 AND id_sede = 3;
+
+SELECT * FROM unicen.tema_unicen where id_plan_estudio = 136 and id_sede = 3;
+SELECT * FROM unicen.tema_unicen where id_plan_estudio = 113 and id_sede = 1;
+
+
+
+-------- PROGRAMA COMPLEMENTARIO CONTADURIA PUBLICA ----------------
+INSERT INTO unicen.equivalencia_materia_unicen
+(id_plan_estudio_origen, id_materia_origen, id_sede_origen,
+ id_plan_estudio_destino, id_materia_destino, id_sede_destino, estado)
+VALUES
+(115, 1589, 1, 138, 1827, 3, 'ACTIVO'), -- ADMINISTRACIÓN FINANCIERA
+(115, 1662, 1, 138, 2019, 3, 'ACTIVO'), -- * AREA 1 AUDITORIA
+(115, 1406, 1, 138, 1689, 3, 'ACTIVO'), -- AUDITORÍA ADMINISTRATIVA
+(115, 1396, 1, 138, 1678, 3, 'ACTIVO'), -- AUDITORÍA DE SISTEMAS
+(115, 1399, 1, 138, 1684, 3, 'ACTIVO'), -- AUDITORÍA FINANCIERA I
+(115, 1409, 1, 138, 1697, 3, 'ACTIVO'), -- AUDITORÍA FINANCIERA II
+(115, 1414, 1, 138, 1707, 3, 'ACTIVO'), -- AUDITORÍA FORENSE
+(115, 1417, 1, 138, 1713, 3, 'ACTIVO'), -- AUDITORÍA GUBERNAMENTAL
+(115, 1411, 1, 138, 1702, 3, 'ACTIVO'), -- AUDITORÍA TRIBUTARIA I
+(115, 1420, 1, 138, 1718, 3, 'ACTIVO'), -- AUDITORÍA TRIBUTARIA II
+(115, 1472, 1, 138, 1686, 3, 'ACTIVO'), -- COMERCIO INTERNACIONAL I
+(115, 1529, 1, 138, 1720, 3, 'ACTIVO'), -- DERECHO DEL TRABAJO Y SEGURIDAD SOCIAL
+(115, 1401, 1, 138, 1754, 3, 'ACTIVO'), -- FINANZAS I
+(115, 1422, 1, 138, 1725, 3, 'ACTIVO'), -- GABINETE DE AUDITORÍA
+(115, 1348, 1, 138, 1746, 3, 'ACTIVO'), -- GESTIÓN DE EMPRENDIMIENTOS
+(115, 1169, 1, 138, 1722, 3, 'ACTIVO'), -- METODOLOGÍA DE LA INVESTIGACIÓN CIENTÍFICA
+(115, 1426, 1, 138, 1734, 3, 'ACTIVO'), -- PRÁCTICA PRE-PROFESIONAL (CPA)
+(115, 1491, 1, 138, 1729, 3, 'ACTIVO'), -- PREPARACIÓN Y EVALUACIÓN DE PROYECTOS
+(115, 1431, 1, 138, 1740, 3, 'ACTIVO'), -- SEMINARIO DE ACTUALIZACÍON II (CPA)
+(115, 1240, 1, 138, 1845, 3, 'ACTIVO'), -- TALLER DE GRADO
+(115, 1307, 1, 138, 2017, 3, 'ACTIVO'); -- TALLER DE GRADO -  (DEFENSA PUBLICA)
+
+DELETE FROM unicen.equivalencia_materia_unicen
+WHERE id_plan_estudio_origen = 115 AND id_sede_origen = 1 AND id_plan_estudio_destino = 138 AND id_sede_destino = 3;
+
+DELETE from unicen.tema_unicen
+WHERE id_plan_estudio = 138 AND id_sede = 3;
+
+SELECT * FROM unicen.tema_unicen where id_plan_estudio = 138 and id_sede = 3;
+
+SELECT * FROM unicen.tema_unicen where id_plan_estudio = 115 and id_sede = 1;
+
+
+
+BEGIN;
+
+-------- FISIOTERAPIA Y KINESIOLOGIA ----------------
+INSERT INTO unicen.equivalencia_materia_unicen
+(id_plan_estudio_origen, id_materia_origen, id_sede_origen,
+ id_plan_estudio_destino, id_materia_destino, id_sede_destino, estado)
+VALUES
+(123,1705,1,134,1577,3,'ACTIVO'),
+(123,1707,1,134,1623,3,'ACTIVO'),
+(123,1712,1,134,1661,3,'ACTIVO'),
+(123,1720,1,134,1703,3,'ACTIVO'),
+(123,1704,1,134,1583,3,'ACTIVO'),
+(123,1726,1,134,1739,3,'ACTIVO'),
+(123,1708,1,134,1630,3,'ACTIVO'),
+(123,1713,1,134,1670,3,'ACTIVO'),
+(123,1733,1,134,1783,3,'ACTIVO'),
+(123,1741,1,134,1813,3,'ACTIVO'),
+(123,1746,1,134,1830,3,'ACTIVO'),
+(123,1709,1,134,1636,3,'ACTIVO'),
+(123,1721,1,134,1708,3,'ACTIVO'),
+(123,1732,1,134,1745,3,'ACTIVO'),
+(123,1703,1,134,1590,3,'ACTIVO'),
+(123,1734,1,134,1791,3,'ACTIVO'),
+(123,1735,1,134,1795,3,'ACTIVO'),
+(123,1736,1,134,1800,3,'ACTIVO'),
+(123,1714,1,134,1676,3,'ACTIVO'),
+(123,1737,1,134,1804,3,'ACTIVO'),
+(123,1710,1,134,1644,3,'ACTIVO'),
+(123,1731,1,134,1747,3,'ACTIVO'),
+(123,1706,1,134,1649,3,'ACTIVO'),
+(123,1722,1,134,1714,3,'ACTIVO'),
+(123,1723,1,134,1717,3,'ACTIVO'),
+(123,1730,1,134,1753,3,'ACTIVO'),
+(123,1742,1,134,1816,3,'ACTIVO'),
+(123,1747,1,134,1746,3,'ACTIVO'),
+(123,1715,1,134,1771,3,'ACTIVO'),
+(123,1729,1,134,1759,3,'ACTIVO'),
+(123,1724,1,134,1723,3,'ACTIVO'),
+(123,1748,1,134,1834,3,'ACTIVO'),
+(123,1725,1,134,1728,3,'ACTIVO'),
+(123,1743,1,134,1818,3,'ACTIVO'),
+(123,1728,1,134,1767,3,'ACTIVO'),
+(123,1740,1,134,1722,3,'ACTIVO'),
+(123,1716,1,134,1682,3,'ACTIVO'),
+(123,1719,1,134,1735,3,'ACTIVO'),
+(123,1727,1,134,1775,3,'ACTIVO'),
+(123,1711,1,134,1654,3,'ACTIVO'),
+(123,1744,1,134,1822,3,'ACTIVO'),
+(123,1717,1,134,1687,3,'ACTIVO'),
+(123,1702,1,134,1597,3,'ACTIVO'),
+(123,1700,1,134,1605,3,'ACTIVO'),
+(123,2095,1,134,1809,3,'ACTIVO'),
+(123,1749,1,134,1836,3,'ACTIVO'),
+(123,1701,1,134,1616,3,'ACTIVO'),
+(123,1750,1,134,1838,3,'ACTIVO'),
+(123,1745,1,134,1825,3,'ACTIVO'),
+(123,1739,1,134,1828,3,'ACTIVO'),
+(123,1751,1,134,1840,3,'ACTIVO'),
+(123,1718,1,134,1695,3,'ACTIVO');
+
+
+-------- PROGRAMA COMPLEMENTARIO INGENIERIA FINANCIERA ----------------
+INSERT INTO unicen.equivalencia_materia_unicen
+(id_plan_estudio_origen, id_materia_origen, id_sede_origen,
+ id_plan_estudio_destino, id_materia_destino, id_sede_destino, estado)
+VALUES
+(114, 1589, 1, 139, 1827, 3, 'ACTIVO'), -- ADMINISTRACIÓN FINANCIERA
+(114, 1469, 1, 139, 1815, 3, 'ACTIVO'), -- ADMINISTRACIÓN PÚBLICA
+(114, 1663, 1, 139, 2018, 3, 'ACTIVO'), -- * AREA 1 ADMINISTRACION Y FINANZAS
+(114, 1399, 1, 139, 1684, 3, 'ACTIVO'), -- AUDITORÍA FINANCIERA I
+(114, 1409, 1, 139, 1697, 3, 'ACTIVO'), -- AUDITORÍA FINANCIERA II
+(114, 1472, 1, 139, 1686, 3, 'ACTIVO'), -- COMERCIO INTERNACIONAL I
+(114, 1511, 1, 139, 1666, 3, 'ACTIVO'), -- ECONOMETRÍA
+(114, 1451, 1, 139, 1780, 3, 'ACTIVO'), -- ELEMENTOS DE GESTIÓN FINANCIERA
+(114, 1401, 1, 139, 1754, 3, 'ACTIVO'), -- FINANZAS I
+(114, 1442, 1, 139, 1764, 3, 'ACTIVO'), -- FINANZAS II
+(114, 1597, 1, 139, 1785, 3, 'ACTIVO'), -- FINANZAS INTERNACIONALES
+(114, 1458, 1, 139, 1788, 3, 'ACTIVO'), -- FINANZAS PÚBLICAS
+(114, 1348, 1, 139, 1746, 3, 'ACTIVO'), -- GESTIÓN DE EMPRENDIMIENTOS
+(114, 1440, 1, 139, 1760, 3, 'ACTIVO'), -- MERCADO DE VALORES
+(114, 1169, 1, 139, 1722, 3, 'ACTIVO'), -- METODOLOGÍA DE LA INVESTIGACIÓN CIENTÍFICA
+(114, 1459, 1, 139, 1792, 3, 'ACTIVO'), -- MODELOS DE PROGRAMACIÓN FINANCIERA
+(114, 1447, 1, 139, 1774, 3, 'ACTIVO'), -- MODELOS FINANCIEROS
+(114, 1461, 1, 139, 1797, 3, 'ACTIVO'), -- PRÁCTICA PRE-PROFESIONAL (IFI)
+(114, 1491, 1, 139, 1729, 3, 'ACTIVO'), -- PREPARACIÓN Y EVALUACIÓN DE PROYECTOS
+(114, 1464, 1, 139, 1801, 3, 'ACTIVO'), -- SEMINARIO DE ACTUALIZACIÓN (IFI)
+(114, 1240, 1, 139, 1845, 3, 'ACTIVO'), -- TALLER DE GRADO
+(114, 1307, 1, 139, 2017, 3, 'ACTIVO'); -- TALLER DE GRADO - (DEFENSA PUBLICA)
+
+
+-------- DERECHO Y CIENCIAS JURIDICAS ----------------
+INSERT INTO unicen.equivalencia_materia_unicen
+(id_plan_estudio_origen, id_materia_origen, id_sede_origen,
+ id_plan_estudio_destino, id_materia_destino, id_sede_destino, estado)
+VALUES
+(112, 1551, 1, 133, 1814, 3, 'ACTIVO'), -- ARGUMENTACIÓN JURÍDICA Y TÉCNICAS DE LITIGACIÓN
+(112, 1127, 1, 133, 1779, 3, 'ACTIVO'), -- COMPUTACIÓN I
+(112, 1476, 1, 133, 1575, 3, 'ACTIVO'), -- CRIMINOLOGÍA Y VICTIMOLOGÍA
+(112, 1543, 1, 133, 1778, 3, 'ACTIVO'), -- DERECHO ADMINISTRATIVO
+(112, 1560, 1, 133, 1831, 3, 'ACTIVO'), -- DERECHO ADUANERO Y COMERCIO INTERNACIONAL
+(112, 1552, 1, 133, 1817, 3, 'ACTIVO'), -- DERECHO AGRARIO
+(112, 1523, 1, 133, 1688, 3, 'ACTIVO'), -- DERECHO AUTONÓMICO Y LEGISLACIÓN MUNICIPAL
+(112, 1545, 1, 133, 1786, 3, 'ACTIVO'), -- DERECHO BANCARIO, BURSÁTIL Y SEGUROS
+(112, 1486, 1, 133, 1604, 3, 'ACTIVO'), -- DERECHO CIVIL I
+(112, 1504, 1, 133, 1637, 3, 'ACTIVO'), -- DERECHO CIVIL II
+(112, 1566, 1, 133, 1693, 3, 'ACTIVO'), -- DERECHO CIVIL III
+(112, 1533, 1, 133, 1738, 3, 'ACTIVO'), -- DERECHO CIVIL IV
+(112, 1546, 1, 133, 1789, 3, 'ACTIVO'), -- DERECHO CIVIL V
+(112, 1565, 1, 133, 1699, 3, 'ACTIVO'), -- DERECHO COMERCIAL I
+(112, 1536, 1, 133, 1744, 3, 'ACTIVO'), -- DERECHO COMERCIAL II
+(112, 1488, 1, 133, 1610, 3, 'ACTIVO'), -- DERECHO CONSTITUCIONAL I
+(112, 1505, 1, 133, 1647, 3, 'ACTIVO'), -- DERECHO CONSTITUCIONAL II
+(112, 1528, 1, 133, 1710, 3, 'ACTIVO'), -- DERECHO DE FAMILIA Y LEGISLACIÓN DEL NIÑO, NIÑA Y ADOLESCENTE
+(112, 1553, 1, 133, 1820, 3, 'ACTIVO'), -- DERECHO DE LOS RECURSOS NATURALES NO RENOVABLES
+(112, 1547, 1, 133, 1794, 3, 'ACTIVO'), -- DERECHO DE LOS RECURSOS NATURALES RENOVABLES
+(112, 1529, 1, 133, 1720, 3, 'ACTIVO'), -- DERECHO DEL TRABAJO Y SEGURIDAD SOCIAL
+(112, 1490, 1, 133, 1617, 3, 'ACTIVO'), -- DERECHO INDÍGENA Y COMUNITARIO
+(112, 1507, 1, 133, 1653, 3, 'ACTIVO'), -- DERECHO INFORMÁTICO
+(112, 1548, 1, 133, 1799, 3, 'ACTIVO'), -- DERECHO INTERNACIONAL PRIVADO
+(112, 1537, 1, 133, 1748, 3, 'ACTIVO'), -- DERECHO INTERNACIONAL PÚBLICO
+(112, 1531, 1, 133, 1726, 3, 'ACTIVO'), -- DERECHO NOTARIAL Y REGISTRAL
+(112, 1492, 1, 133, 1624, 3, 'ACTIVO'), -- DERECHO PENAL I
+(112, 1509, 1, 133, 1660, 3, 'ACTIVO'), -- DERECHO PENAL II
+(112, 1539, 1, 133, 1755, 3, 'ACTIVO'), -- DERECHO PROCESAL CIVIL Y ORGANIZACIÓN JUDICIAL
+(112, 1532, 1, 133, 1733, 3, 'ACTIVO'), -- DERECHO PROCESAL CONSTITUCIONAL
+(112, 1540, 1, 133, 1761, 3, 'ACTIVO'), -- DERECHO PROCESAL PENAL
+(112, 1549, 1, 133, 1806, 3, 'ACTIVO'), -- DERECHO PROCESAL Y PROCEDIMIENTO CIVIL
+(112, 1478, 1, 133, 187, 3, 'ACTIVO'), -- DERECHO ROMANO
+(112, 1517, 1, 133, 1673, 3, 'ACTIVO'), -- DERECHOS HUMANOS
+(112, 1512, 1, 133, 1667, 3, 'ACTIVO'), -- DERECHO TRIBUTARIO Y FINANCIERO
+(112, 1480, 1, 133, 283, 3, 'ACTIVO'), -- FILOSOFÍA JURÍDICA Y ÉTICA PROFESIONAL
+(112, 1348, 1, 133, 1746, 3, 'ACTIVO'), -- GESTIÓN DE EMPRENDIMIENTOS
+(112, 1343, 1, 133, 1771, 3, 'ACTIVO'), -- INTRODUCCIÓN A LA INVESTIGACIÓN CIENTÍFICA
+(112, 1483, 1, 133, 907, 3, 'ACTIVO'), -- INTRODUCCIÓN AL DERECHO
+(112, 1521, 1, 133, 1680, 3, 'ACTIVO'), -- MEDICINA LEGAL Y CRIMINALÍSTICA
+(112, 1554, 1, 133, 1823, 3, 'ACTIVO'), -- MEDIOS ALTERNOS DE SOLUCIÓN DE CONFLICTOS
+(112, 1169, 1, 133, 1722, 3, 'ACTIVO'), -- METODOLOGÍA DE LA INVESTIGACIÓN CIENTÍFICA
+(112, 1541, 1, 133, 1773, 3, 'ACTIVO'), -- ORATORIA JURÍDICA Y FORENSE
+(112, 1556, 1, 133, 1826, 3, 'ACTIVO'), -- PRÁCTICA FORENSE CIVIL I
+(112, 1562, 1, 133, 1833, 3, 'ACTIVO'), -- PRÁCTICA FORENSE CIVIL II
+(112, 1558, 1, 133, 1829, 3, 'ACTIVO'), -- PRÁCTICA FORENSE PENAL I
+(112, 1564, 1, 133, 1835, 3, 'ACTIVO'), -- PRÁCTICA FORENSE PENAL II
+(112, 1568, 1, 133, 1837, 3, 'ACTIVO'), -- PRÁCTICA PRE-PROFESIONAL (DCJ)
+(112, 1550, 1, 133, 1811, 3, 'ACTIVO'), -- PROCEDIMIENTO PENAL Y MINISTERIO PÚBLICO
+(112, 1570, 1, 133, 1839, 3, 'ACTIVO'), -- PROCURADURÍA Y DEFENSA LEGAL DEL ESTADO
+(112, 1495, 1, 133, 1629, 3, 'ACTIVO'), -- PSICOLOGÍA JURÍDICA
+(112, 1574, 1, 133, 1841, 3, 'ACTIVO'), -- SEMINARIO DE ACTUALIZACIÓN (DCJ)
+(112, 1499, 1, 133, 1633, 3, 'ACTIVO'), -- SOCIOLOGÍA JURÍDICA
+(112, 1484, 1, 133, 1595, 3, 'ACTIVO'); -- TEORÍAS DEL ESTADO
+
+
+
+-------- ADMINISTRACION DE EMPRESAS TURISTICAS, HOTEL Y GASTRONOMIA ----------------
+INSERT INTO unicen.equivalencia_materia_unicen
+(id_plan_estudio_origen, id_materia_origen, id_sede_origen,
+ id_plan_estudio_destino, id_materia_destino, id_sede_destino, estado)
+VALUES
+(105, 1349, 1, 131, 1613, 3, 'ACTIVO'), -- ADMINISTRACIÓN HOTELERA I
+(105, 1363, 1, 131, 1640, 3, 'ACTIVO'), -- ADMINISTRACIÓN HOTELERA II
+(105, 1404, 1, 131, 1706, 3, 'ACTIVO'), -- ADMINISTRACIÓN HOTELERA III
+(105, 1331, 1, 131, 1579, 3, 'ACTIVO'), -- ADMINISTRACIÓN I
+(105, 1364, 1, 131, 1598, 3, 'ACTIVO'), -- ADMINISTRACIÓN II
+(105, 1559, 1, 131, 1585, 3, 'ACTIVO'), -- ANTROPOLOGÍA GENERAL
+(105, 1410, 1, 131, 1711, 3, 'ACTIVO'), -- ATENCIÓN AL CLIENTE
+(105, 1127, 1, 131, 1779, 3, 'ACTIVO'), -- COMPUTACIÓN I
+(105, 1345, 1, 131, 1578, 3, 'ACTIVO'), -- CONTABILIDAD BÁSICA
+(105, 1357, 1, 131, 1591, 3, 'ACTIVO'), -- CONTABILIDAD DE COSTOS
+(105, 1352, 1, 131, 1582, 3, 'ACTIVO'), -- CONTABILIDAD INTERMEDIA
+(105, 1590, 1, 131, 1842, 3, 'ACTIVO'), -- CONTABILIDAD PARA EMPRESAS HOTELERAS Y GASTRONÓMICAS
+(105, 1359, 1, 131, 1587, 3, 'ACTIVO'), -- ECONOMÍA GENERAL Y POLÍTICA
+(105, 1383, 1, 131, 1675, 3, 'ACTIVO'), -- ECOTURISMO I
+(105, 1416, 1, 131, 1721, 3, 'ACTIVO'), -- ECOTURISMO II
+(105, 1350, 1, 131, 1620, 3, 'ACTIVO'), -- EMPRESA DE VIAJES I
+(105, 1371, 1, 131, 1648, 3, 'ACTIVO'), -- EMPRESA DE VIAJES II
+(105, 1634, 1, 131, 1606, 3, 'ACTIVO'), -- ESTADISTICA
+(105, 1348, 1, 131, 1746, 3, 'ACTIVO'), -- GESTIÓN DE EMPRENDIMIENTOS
+(105, 1584, 1, 131, 1696, 3, 'ACTIVO'), -- GESTIÓN DEL CAPITAL HUMANO
+(105, 1339, 1, 131, 1588, 3, 'ACTIVO'), -- HIGIENE Y SEGURIDAD
+(105, 1341, 1, 131, 1594, 3, 'ACTIVO'), -- HISTORIA DE BOLIVIA
+(105, 1343, 1, 131, 1771, 3, 'ACTIVO'), -- INTRODUCCIÓN A LA INVESTIGACIÓN CIENTÍFICA
+(105, 1465, 1, 131, 1671, 3, 'ACTIVO'), -- INVESTIGACIÓN DE MERCADOS I
+(105, 1389, 1, 131, 1683, 3, 'ACTIVO'), -- LEGISLACIÓN TURÍSTICA
+(105, 1594, 1, 131, 1844, 3, 'ACTIVO'), -- MARKETING DE SERVICIOS TURÍSTICOS Y HOTELEROS
+(105, 1428, 1, 131, 1634, 3, 'ACTIVO'), -- MARKETING I
+(105, 1169, 1, 131, 1722, 3, 'ACTIVO'), -- METODOLOGÍA DE LA INVESTIGACIÓN CIENTÍFICA
+(105, 1354, 1, 131, 1628, 3, 'ACTIVO'), -- OFERTA TURÍSTICA INTERNACIONAL
+(105, 1344, 1, 131, 1601, 3, 'ACTIVO'), -- OFERTA TURÍSTICA NACIONAL
+(105, 1374, 1, 131, 1657, 3, 'ACTIVO'), -- ORDENAMIENTO TERRITORIAL
+(105, 1378, 1, 131, 1663, 3, 'ACTIVO'), -- ORGANIZACIÓN DE EVENTOS
+(105, 1393, 1, 131, 1690, 3, 'ACTIVO'), -- PLANIFICACIÓN TURÍSTICA I
+(105, 1421, 1, 131, 1727, 3, 'ACTIVO'), -- PLANIFICACIÓN TURÍSTICA II
+(105, 1491, 1, 131, 1729, 3, 'ACTIVO'), -- PREPARACIÓN Y EVALUACIÓN DE PROYECTOS
+(105, 1365, 1, 131, 1600, 3, 'ACTIVO'), -- PRESUPUESTOS
+(105, 1430, 1, 131, 1741, 3, 'ACTIVO'), -- SEMINARIO DE ACTUALIZACIÓN (ADT)
+(105, 1132, 1, 131, 1603, 3, 'ACTIVO'), -- SOCIOLOGÍA I
+(105, 1444, 1, 131, 1762, 3, 'ACTIVO'), -- TALLER DE GASTRONOMÍA
+(105, 1448, 1, 131, 1766, 3, 'ACTIVO'), -- TALLER DE HOTELERÍA
+(105, 1434, 1, 131, 1749, 3, 'ACTIVO'), -- TALLER DE PROYECTOS TURÍSTICOS
+(105, 1454, 1, 131, 1770, 3, 'ACTIVO'), -- TALLER DE TURISMO
+(105, 1333, 1, 131, 1576, 3, 'ACTIVO'), -- TECNOLOGÍA DE ALIMENTOS I
+(105, 1346, 1, 131, 1607, 3, 'ACTIVO'), -- TECNOLOGÍA DE ALIMENTOS II
+(105, 1358, 1, 131, 1635, 3, 'ACTIVO'), -- TECNOLOGÍA DE ALIMENTOS III
+(105, 1381, 1, 131, 1668, 3, 'ACTIVO'), -- TECNOLOGÍA DE ALIMENTOS IV
+(105, 1398, 1, 131, 1698, 3, 'ACTIVO'), -- TECNOLOGÍA DE ALIMENTOS V
+(105, 1425, 1, 131, 1732, 3, 'ACTIVO'), -- TECNOLOGÍA DE ALIMENTOS VI
+(105, 1335, 1, 131, 1581, 3, 'ACTIVO'), -- TEORÍAS Y ESCUELAS DEL TURISMO
+(105, 1437, 1, 131, 1757, 3, 'ACTIVO'); -- TURISMO RURAL Y COMUNITARIO
+
+-------- INGENIERIA COMERCIAL ----------------
+INSERT INTO unicen.equivalencia_materia_unicen
+(id_plan_estudio_origen, id_materia_origen, id_sede_origen,
+ id_plan_estudio_destino, id_materia_destino, id_sede_destino, estado)
+VALUES
+(108, 1331, 1, 130, 1579, 3, 'ACTIVO'), -- ADMINISTRACIÓN I
+(108, 1364, 1, 130, 1598, 3, 'ACTIVO'), -- ADMINISTRACIÓN II
+(108, 1338, 1, 130, 1580, 3, 'ACTIVO'), -- ÁLGEBRA
+(108, 1347, 1, 130, 1584, 3, 'ACTIVO'), -- CÁLCULO I
+(108, 1373, 1, 130, 1602, 3, 'ACTIVO'), -- CÁLCULO II
+(108, 1472, 1, 130, 1686, 3, 'ACTIVO'), -- COMERCIO INTERNACIONAL I
+(108, 1481, 1, 130, 1709, 3, 'ACTIVO'), -- COMERCIO INTERNACIONAL II
+(108, 1587, 1, 130, 1643, 3, 'ACTIVO'), -- COMPORTAMIENTO DEL CONSUMIDOR
+(108, 1127, 1, 130, 1779, 3, 'ACTIVO'), -- COMPUTACIÓN I
+(108, 1340, 1, 130, 1782, 3, 'ACTIVO'), -- COMPUTACIÓN II
+(108, 1345, 1, 130, 1578, 3, 'ACTIVO'), -- CONTABILIDAD BÁSICA
+(108, 1357, 1, 130, 1591, 3, 'ACTIVO'), -- CONTABILIDAD DE COSTOS
+(108, 1352, 1, 130, 1582, 3, 'ACTIVO'), -- CONTABILIDAD INTERMEDIA
+(108, 1377, 1, 130, 1632, 3, 'ACTIVO'), -- COSTOS PARA DECISIONES
+(108, 1529, 1, 130, 1720, 3, 'ACTIVO'), -- DERECHO DEL TRABAJO Y SEGURIDAD SOCIAL
+(108, 1582, 1, 130, 1843, 3, 'ACTIVO'), -- DERECHO EMPRESARIAL Y COMERCIAL
+(108, 1494, 1, 130, 1742, 3, 'ACTIVO'), -- DIRECCIÓN EJECUTIVA
+(108, 1485, 1, 130, 1712, 3, 'ACTIVO'), -- E-COMMERCE
+(108, 1511, 1, 130, 1666, 3, 'ACTIVO'), -- ECONOMETRÍA
+(108, 1359, 1, 130, 1587, 3, 'ACTIVO'), -- ECONOMÍA GENERAL Y POLÍTICA
+(108, 1634, 1, 130, 1606, 3, 'ACTIVO'), -- ESTADISTICA
+(108, 1408, 1, 130, 1621, 3, 'ACTIVO'), -- ESTADÍSTICA AVANZADA
+(108, 1401, 1, 130, 1754, 3, 'ACTIVO'), -- FINANZAS I
+(108, 1442, 1, 130, 1764, 3, 'ACTIVO'), -- FINANZAS II
+(108, 1348, 1, 130, 1746, 3, 'ACTIVO'), -- GESTIÓN DE EMPRENDIMIENTOS
+(108, 1584, 1, 130, 1696, 3, 'ACTIVO'), -- GESTIÓN DEL CAPITAL HUMANO
+(108, 1446, 1, 130, 1646, 3, 'ACTIVO'), -- GESTIÓN DE PRODUCCIÓN
+(108, 1474, 1, 130, 1691, 3, 'ACTIVO'), -- GESTIÓN DE VENTAS
+(108, 1585, 1, 130, 1592, 3, 'ACTIVO'), -- INTRODUCCIÓN A LA INGENIERÍA COMERCIAL
+(108, 1343, 1, 130, 1771, 3, 'ACTIVO'), -- INTRODUCCIÓN A LA INVESTIGACIÓN CIENTÍFICA
+(108, 1465, 1, 130, 1671, 3, 'ACTIVO'), -- INVESTIGACIÓN DE MERCADOS I
+(108, 1583, 1, 130, 1700, 3, 'ACTIVO'), -- INVESTIGACIÓN DE MERCADOS II
+(108, 1418, 1, 130, 1626, 3, 'ACTIVO'), -- INVESTIGACIÓN DE OPERACIONES I
+(108, 1449, 1, 130, 1652, 3, 'ACTIVO'), -- INVESTIGACIÓN DE OPERACIONES II
+(108, 1423, 1, 130, 1631, 3, 'ACTIVO'), -- MACROECONOMÍA
+(108, 1514, 1, 130, 1716, 3, 'ACTIVO'), -- MARKETING DE SERVICIOS Y SOCIAL
+(108, 1496, 1, 130, 1750, 3, 'ACTIVO'), -- MARKETING DIGITAL
+(108, 1428, 1, 130, 1634, 3, 'ACTIVO'), -- MARKETING I
+(108, 1452, 1, 130, 1656, 3, 'ACTIVO'), -- MARKETING II
+(108, 1508, 1, 130, 1677, 3, 'ACTIVO'), -- MARKETING III
+(108, 1586, 1, 130, 1752, 3, 'ACTIVO'), -- MARKETING INTERNACIONAL
+(108, 1513, 1, 130, 1704, 3, 'ACTIVO'), -- MARKETING IV
+(108, 1394, 1, 130, 1611, 3, 'ACTIVO'), -- MATEMÁTICA FINANCIERA
+(108, 1440, 1, 130, 1760, 3, 'ACTIVO'), -- MERCADO DE VALORES
+(108, 1588, 1, 130, 1679, 3, 'ACTIVO'), -- MERCHANDISING
+(108, 1169, 1, 130, 1722, 3, 'ACTIVO'), -- METODOLOGÍA DE LA INVESTIGACIÓN CIENTÍFICA
+(108, 1400, 1, 130, 1615, 3, 'ACTIVO'), -- MICROECONOMÍA
+(108, 1498, 1, 130, 1758, 3, 'ACTIVO'), -- NEGOCIACIONES
+(108, 1522, 1, 130, 1763, 3, 'ACTIVO'), -- PRÁCTICA PRE-PROFESIONAL (ICO)
+(108, 1491, 1, 130, 1729, 3, 'ACTIVO'), -- PREPARACIÓN Y EVALUACIÓN DE PROYECTOS
+(108, 1365, 1, 130, 1600, 3, 'ACTIVO'), -- PRESUPUESTOS
+(108, 1362, 1, 130, 1662, 3, 'ACTIVO'), -- PUBLICIDAD
+(108, 1518, 1, 130, 1736, 3, 'ACTIVO'), -- SEMINARIO DE ACTUALIZACIÓN (ICO)
+(108, 1436, 1, 130, 1639, 3, 'ACTIVO'), -- SISTEMAS ADMINISTRATIVOS
+(108, 1502, 1, 130, 1769, 3, 'ACTIVO'); -- TALLER INTEGRAL DE NEGOCIOS
+
+
+-------- PROGRAMA COMPLEMENTARIO ADMINISTRACION DE EMPRESAS ----------------
+INSERT INTO unicen.equivalencia_materia_unicen
+(id_plan_estudio_origen, id_materia_origen, id_sede_origen,
+ id_plan_estudio_destino, id_materia_destino, id_sede_destino, estado)
+VALUES
+(110, 1589, 1, 137, 1827, 3, 'ACTIVO'), -- ADMINISTRACIÓN FINANCIERA
+(110, 1469, 1, 137, 1815, 3, 'ACTIVO'), -- ADMINISTRACIÓN PÚBLICA
+(110, 1665, 1, 137, 2020, 3, 'ACTIVO'), -- * AREA GESTION ADMINISTRATIVA, FINANCIERA Y DE COMERCIO INTERNACIONAL
+(110, 1472, 1, 137, 1686, 3, 'ACTIVO'), -- COMERCIO INTERNACIONAL I
+(110, 1481, 1, 137, 1709, 3, 'ACTIVO'), -- COMERCIO INTERNACIONAL II
+(110, 1494, 1, 137, 1742, 3, 'ACTIVO'), -- DIRECCIÓN EJECUTIVA
+(110, 1485, 1, 137, 1712, 3, 'ACTIVO'), -- E-COMMERCE
+(110, 1401, 1, 137, 1754, 3, 'ACTIVO'), -- FINANZAS I
+(110, 1442, 1, 137, 1764, 3, 'ACTIVO'), -- FINANZAS II
+(110, 1487, 1, 137, 1821, 3, 'ACTIVO'), -- GESTIÓN DE CALIDAD
+(110, 1348, 1, 137, 1746, 3, 'ACTIVO'), -- GESTIÓN DE EMPRENDIMIENTOS
+(110, 1584, 1, 137, 1696, 3, 'ACTIVO'), -- GESTIÓN DEL CAPITAL HUMANO
+(110, 1489, 1, 137, 1824, 3, 'ACTIVO'), -- LOGÍSTICA EMPRESARIAL
+(110, 1496, 1, 137, 1750, 3, 'ACTIVO'), -- MARKETING DIGITAL
+(110, 1440, 1, 137, 1760, 3, 'ACTIVO'), -- MERCADO DE VALORES
+(110, 1169, 1, 137, 1722, 3, 'ACTIVO'), -- METODOLOGÍA DE LA INVESTIGACIÓN CIENTÍFICA
+(110, 1498, 1, 137, 1758, 3, 'ACTIVO'), -- NEGOCIACIONES
+(110, 1477, 1, 137, 1819, 3, 'ACTIVO'), -- PLANIFICACIÓN ESTRATÉGICA
+(110, 1500, 1, 137, 1832, 3, 'ACTIVO'), -- PRÁCTICA PRE-PROFESIONAL (ADM)
+(110, 1491, 1, 137, 1729, 3, 'ACTIVO'), -- PREPARACIÓN Y EVALUACIÓN DE PROYECTOS
+(110, 1240, 1, 137, 1845, 3, 'ACTIVO'), -- TALLER DE GRADO
+(110, 1307, 1, 137, 2017, 3, 'ACTIVO'), -- TALLER DE GRADO - (DEFENSA PUBLICA)
+(110, 1502, 1, 137, 1769, 3, 'ACTIVO'); -- TALLER INTEGRAL DE NEGOCIOS
+
+-------- CONTADURIA PUBLICA ----------------
+INSERT INTO unicen.equivalencia_materia_unicen
+(id_plan_estudio_origen, id_materia_origen, id_sede_origen,
+ id_plan_estudio_destino, id_materia_destino, id_sede_destino, estado)
+VALUES
+(106, 1589, 1, 132, 1827, 3, 'ACTIVO'), -- ADMINISTRACIÓN FINANCIERA
+(106, 1331, 1, 132, 1579, 3, 'ACTIVO'), -- ADMINISTRACIÓN I
+(106, 1364, 1, 132, 1598, 3, 'ACTIVO'), -- ADMINISTRACIÓN II
+(106, 1338, 1, 132, 1580, 3, 'ACTIVO'), -- ÁLGEBRA
+(106, 1382, 1, 132, 1650, 3, 'ACTIVO'), -- ANÁLISIS E INTERPRETACIÓN DE ESTADOS FINANCIEROS
+(106, 1406, 1, 132, 1689, 3, 'ACTIVO'), -- AUDITORÍA ADMINISTRATIVA
+(106, 1396, 1, 132, 1678, 3, 'ACTIVO'), -- AUDITORÍA DE SISTEMAS
+(106, 1399, 1, 132, 1684, 3, 'ACTIVO'), -- AUDITORÍA FINANCIERA I
+(106, 1409, 1, 132, 1697, 3, 'ACTIVO'), -- AUDITORÍA FINANCIERA II
+(106, 1414, 1, 132, 1707, 3, 'ACTIVO'), -- AUDITORÍA FORENSE
+(106, 1417, 1, 132, 1713, 3, 'ACTIVO'), -- AUDITORÍA GUBERNAMENTAL
+(106, 1411, 1, 132, 1702, 3, 'ACTIVO'), -- AUDITORÍA TRIBUTARIA I
+(106, 1420, 1, 132, 1718, 3, 'ACTIVO'), -- AUDITORÍA TRIBUTARIA II
+(106, 1347, 1, 132, 1584, 3, 'ACTIVO'), -- CÁLCULO I
+(106, 1472, 1, 132, 1686, 3, 'ACTIVO'), -- COMERCIO INTERNACIONAL I
+(106, 1127, 1, 132, 1779, 3, 'ACTIVO'), -- COMPUTACIÓN I
+(106, 1340, 1, 132, 1782, 3, 'ACTIVO'), -- COMPUTACIÓN II
+(106, 1367, 1, 132, 1608, 3, 'ACTIVO'), -- CONTABILIDAD AGROPECUARIA
+(106, 1345, 1, 132, 1578, 3, 'ACTIVO'), -- CONTABILIDAD BÁSICA
+(106, 1355, 1, 132, 1586, 3, 'ACTIVO'), -- CONTABILIDAD COMPUTARIZADA
+(106, 1357, 1, 132, 1591, 3, 'ACTIVO'), -- CONTABILIDAD DE COSTOS
+(106, 1386, 1, 132, 1655, 3, 'ACTIVO'), -- CONTABILIDAD DE ENTIDADES FINANCIERAS
+(106, 1368, 1, 132, 1612, 3, 'ACTIVO'), -- CONTABILIDAD DE SERVICIOS
+(106, 1361, 1, 132, 1596, 3, 'ACTIVO'), -- CONTABILIDAD DE SOCIEDADES
+(106, 1372, 1, 132, 1619, 3, 'ACTIVO'), -- CONTABILIDAD INTEGRADA
+(106, 1352, 1, 132, 1582, 3, 'ACTIVO'), -- CONTABILIDAD INTERMEDIA
+(106, 1375, 1, 132, 1625, 3, 'ACTIVO'), -- CONTABILIDAD MINERA Y PETROLERA
+(106, 1377, 1, 132, 1632, 3, 'ACTIVO'), -- COSTOS PARA DECISIONES
+(106, 1529, 1, 132, 1720, 3, 'ACTIVO'), -- DERECHO DEL TRABAJO Y SEGURIDAD SOCIAL
+(106, 1582, 1, 132, 1843, 3, 'ACTIVO'), -- DERECHO EMPRESARIAL Y COMERCIAL
+(106, 1512, 1, 132, 1667, 3, 'ACTIVO'), -- DERECHO TRIBUTARIO Y FINANCIERO
+(106, 1359, 1, 132, 1587, 3, 'ACTIVO'), -- ECONOMÍA GENERAL Y POLÍTICA
+(106, 1634, 1, 132, 1606, 3, 'ACTIVO'), -- ESTADISTICA
+(106, 1401, 1, 132, 1754, 3, 'ACTIVO'), -- FINANZAS I
+(106, 1422, 1, 132, 1725, 3, 'ACTIVO'), -- GABINETE DE AUDITORÍA
+(106, 1387, 1, 132, 1659, 3, 'ACTIVO'), -- GABINETE DE CONTABILIDAD
+(106, 1388, 1, 132, 1665, 3, 'ACTIVO'), -- GABINETE DE COSTOS
+(106, 1348, 1, 132, 1746, 3, 'ACTIVO'), -- GESTIÓN DE EMPRENDIMIENTOS
+(106, 1584, 1, 132, 1696, 3, 'ACTIVO'), -- GESTIÓN DEL CAPITAL HUMANO
+(106, 1343, 1, 132, 1771, 3, 'ACTIVO'), -- INTRODUCCIÓN A LA INVESTIGACIÓN CIENTÍFICA
+(106, 1418, 1, 132, 1626, 3, 'ACTIVO'), -- INVESTIGACIÓN DE OPERACIONES I
+(106, 1423, 1, 132, 1631, 3, 'ACTIVO'), -- MACROECONOMÍA
+(106, 1394, 1, 132, 1611, 3, 'ACTIVO'), -- MATEMÁTICA FINANCIERA
+(106, 1169, 1, 132, 1722, 3, 'ACTIVO'), -- METODOLOGÍA DE LA INVESTIGACIÓN CIENTÍFICA
+(106, 1400, 1, 132, 1615, 3, 'ACTIVO'), -- MICROECONOMÍA
+(106, 1379, 1, 132, 1641, 3, 'ACTIVO'), -- ORGANIZACIÓN Y MÉTODOS
+(106, 1426, 1, 132, 1734, 3, 'ACTIVO'), -- PRÁCTICA PRE-PROFESIONAL (CPA)
+(106, 1491, 1, 132, 1729, 3, 'ACTIVO'), -- PREPARACIÓN Y EVALUACIÓN DE PROYECTOS
+(106, 1365, 1, 132, 1600, 3, 'ACTIVO'), -- PRESUPUESTOS
+(106, 1392, 1, 132, 1672, 3, 'ACTIVO'), -- SEMINARIO DE ACTUALIZACIÓN I (CPA)
+(106, 1431, 1, 132, 1740, 3, 'ACTIVO'); -- SEMINARIO DE ACTUALIZACÍON II (CPA)
+
+
+-------- ADMINISTRACION DE EMPRESAS ----------------
+INSERT INTO unicen.equivalencia_materia_unicen
+(id_plan_estudio_origen, id_materia_origen, id_sede_origen,
+ id_plan_estudio_destino, id_materia_destino, id_sede_destino, estado)
+VALUES
+(109, 1589, 1, 135, 1827, 3, 'ACTIVO'), -- ADMINISTRACIÓN FINANCIERA
+(109, 1331, 1, 135, 1579, 3, 'ACTIVO'), -- ADMINISTRACIÓN I
+(109, 1364, 1, 135, 1598, 3, 'ACTIVO'), -- ADMINISTRACIÓN II
+(109, 1469, 1, 135, 1815, 3, 'ACTIVO'), -- ADMINISTRACIÓN PÚBLICA
+(109, 1338, 1, 135, 1580, 3, 'ACTIVO'), -- ÁLGEBRA
+(109, 1382, 1, 135, 1650, 3, 'ACTIVO'), -- ANÁLISIS E INTERPRETACIÓN DE ESTADOS FINANCIEROS
+(109, 1347, 1, 135, 1584, 3, 'ACTIVO'), -- CÁLCULO I
+(109, 1373, 1, 135, 1602, 3, 'ACTIVO'), -- CÁLCULO II
+(109, 1472, 1, 135, 1686, 3, 'ACTIVO'), -- COMERCIO INTERNACIONAL I
+(109, 1481, 1, 135, 1709, 3, 'ACTIVO'), -- COMERCIO INTERNACIONAL II
+(109, 1127, 1, 135, 1779, 3, 'ACTIVO'), -- COMPUTACIÓN I
+(109, 1340, 1, 135, 1782, 3, 'ACTIVO'), -- COMPUTACIÓN II
+(109, 1351, 1, 135, 1777, 3, 'ACTIVO'), -- COMUNICACIÓN ADMINISTRATIVA
+(109, 1345, 1, 135, 1578, 3, 'ACTIVO'), -- CONTABILIDAD BÁSICA
+(109, 1357, 1, 135, 1591, 3, 'ACTIVO'), -- CONTABILIDAD DE COSTOS
+(109, 1352, 1, 135, 1582, 3, 'ACTIVO'), -- CONTABILIDAD INTERMEDIA
+(109, 1463, 1, 135, 1807, 3, 'ACTIVO'), -- CONTROL DE GESTIÓN
+(109, 1377, 1, 135, 1632, 3, 'ACTIVO'), -- COSTOS PARA DECISIONES
+(109, 1529, 1, 135, 1720, 3, 'ACTIVO'), -- DERECHO DEL TRABAJO Y SEGURIDAD SOCIAL
+(109, 1582, 1, 135, 1843, 3, 'ACTIVO'), -- DERECHO EMPRESARIAL Y COMERCIAL
+(109, 1494, 1, 135, 1742, 3, 'ACTIVO'), -- DIRECCIÓN EJECUTIVA
+(109, 1485, 1, 135, 1712, 3, 'ACTIVO'), -- E-COMMERCE
+(109, 1359, 1, 135, 1587, 3, 'ACTIVO'), -- ECONOMÍA GENERAL Y POLÍTICA
+(109, 1634, 1, 135, 1606, 3, 'ACTIVO'), -- ESTADISTICA
+(109, 1408, 1, 135, 1621, 3, 'ACTIVO'), -- ESTADÍSTICA AVANZADA
+(109, 1401, 1, 135, 1754, 3, 'ACTIVO'), -- FINANZAS I
+(109, 1442, 1, 135, 1764, 3, 'ACTIVO'), -- FINANZAS II
+(109, 1348, 1, 135, 1746, 3, 'ACTIVO'), -- GESTIÓN DE EMPRENDIMIENTOS
+(109, 1487, 1, 135, 1821, 3, 'ACTIVO'), -- GESTIÓN DE CALIDAD
+(109, 1584, 1, 135, 1696, 3, 'ACTIVO'), -- GESTIÓN DEL CAPITAL HUMANO
+(109, 1446, 1, 135, 1646, 3, 'ACTIVO'), -- GESTIÓN DE PRODUCCIÓN
+(109, 1343, 1, 135, 1771, 3, 'ACTIVO'), -- INTRODUCCIÓN A LA INVESTIGACIÓN CIENTÍFICA
+(109, 1465, 1, 135, 1671, 3, 'ACTIVO'), -- INVESTIGACIÓN DE MERCADOS I
+(109, 1418, 1, 135, 1626, 3, 'ACTIVO'), -- INVESTIGACIÓN DE OPERACIONES I
+(109, 1449, 1, 135, 1652, 3, 'ACTIVO'), -- INVESTIGACIÓN DE OPERACIONES II
+(109, 1489, 1, 135, 1824, 3, 'ACTIVO'), -- LOGÍSTICA EMPRESARIAL
+(109, 1423, 1, 135, 1631, 3, 'ACTIVO'), -- MACROECONOMÍA
+(109, 1496, 1, 135, 1750, 3, 'ACTIVO'), -- MARKETING DIGITAL
+(109, 1428, 1, 135, 1634, 3, 'ACTIVO'), -- MARKETING I
+(109, 1452, 1, 135, 1656, 3, 'ACTIVO'), -- MARKETING II
+(109, 1394, 1, 135, 1611, 3, 'ACTIVO'), -- MATEMÁTICA FINANCIERA
+(109, 1440, 1, 135, 1760, 3, 'ACTIVO'), -- MERCADO DE VALORES
+(109, 1169, 1, 135, 1722, 3, 'ACTIVO'), -- METODOLOGÍA DE LA INVESTIGACIÓN CIENTÍFICA
+(109, 1400, 1, 135, 1615, 3, 'ACTIVO'), -- MICROECONOMÍA
+(109, 1457, 1, 135, 1803, 3, 'ACTIVO'), -- MODELOS ORGANIZACIONALES
+(109, 1498, 1, 135, 1758, 3, 'ACTIVO'), -- NEGOCIACIONES
+(109, 1477, 1, 135, 1819, 3, 'ACTIVO'), -- PLANIFICACIÓN ESTRATÉGICA
+(109, 1500, 1, 135, 1832, 3, 'ACTIVO'), -- PRÁCTICA PRE-PROFESIONAL (ADM)
+(109, 1491, 1, 135, 1729, 3, 'ACTIVO'), -- PREPARACIÓN Y EVALUACIÓN DE PROYECTOS
+(109, 1365, 1, 135, 1600, 3, 'ACTIVO'), -- PRESUPUESTOS
+(109, 1468, 1, 135, 1812, 3, 'ACTIVO'), -- SEMINARIO DE ACTUALIZACIÓN (ADM)
+(109, 1436, 1, 135, 1639, 3, 'ACTIVO'), -- SISTEMAS ADMINISTRATIVOS
+(109, 1502, 1, 135, 1769, 3, 'ACTIVO'); -- TALLER INTEGRAL DE NEGOCIOS
+
+
+-------- PSICOLOGIA ----------------
+INSERT INTO unicen.equivalencia_materia_unicen
+(id_plan_estudio_origen, id_materia_origen, id_sede_origen,
+ id_plan_estudio_destino, id_materia_destino, id_sede_destino, estado)
+VALUES
+(111, 1331, 1, 129, 1579, 3, 'ACTIVO'), -- ADMINISTRACIÓN I
+(111, 1559, 1, 129, 1585, 3, 'ACTIVO'), -- ANTROPOLOGÍA GENERAL
+(111, 1127, 1, 129, 1779, 3, 'ACTIVO'), -- COMPUTACIÓN I
+(111, 1476, 1, 129, 1575, 3, 'ACTIVO'), -- CRIMINOLOGÍA Y VICTIMOLOGÍA
+(111, 1525, 1, 129, 1743, 3, 'ACTIVO'), -- DOTACIÓN DE PERSONAL
+(111, 1526, 1, 129, 1751, 3, 'ACTIVO'), -- ELABORACIÓN Y EVALUACIÓN DE PROYECTOS SOCIALES
+(111, 1376, 1, 129, 1609, 3, 'ACTIVO'), -- ENTREVISTA PSICOLÓGICA
+(111, 1360, 1, 129, 1589, 3, 'ACTIVO'), -- ESCUELAS PSICOLÓGICAS
+(111, 1634, 1, 129, 1606, 3, 'ACTIVO'), -- ESTADISTICA
+(111, 1366, 1, 129, 1593, 3, 'ACTIVO'), -- ETICA PROFESIONAL
+(111, 1413, 1, 129, 1642, 3, 'ACTIVO'), -- EVALUACIÓN PSICOLÓGICA I
+(111, 1493, 1, 129, 1681, 3, 'ACTIVO'), -- EVALUACIÓN PSICOLÓGICA II
+(111, 1515, 1, 129, 1719, 3, 'ACTIVO'), -- EVALUACIÓN PSICOLÓGICA III
+(111, 1439, 1, 129, 1645, 3, 'ACTIVO'), -- FACILITACIÓN Y PSICOLOGÍA DE GRUPOS
+(111, 1369, 1, 129, 1599, 3, 'ACTIVO'), -- FILOSOFÍA
+(111, 1563, 1, 129, 1614, 3, 'ACTIVO'), -- FORMACIÓN SOCIAL BOLIVIANA I
+(111, 1348, 1, 129, 1746, 3, 'ACTIVO'), -- GESTIÓN DE EMPRENDIMIENTOS
+(111, 1584, 1, 129, 1696, 3, 'ACTIVO'), -- GESTIÓN DEL CAPITAL HUMANO
+(111, 1538, 1, 129, 1776, 3, 'ACTIVO'), -- INTERVENCIÓN ORGANIZACIONAL
+(111, 1542, 1, 129, 1781, 3, 'ACTIVO'), -- INTERVENCIÓN PSICOEDUCATIVA
+(111, 1343, 1, 129, 1771, 3, 'ACTIVO'), -- INTRODUCCIÓN A LA INVESTIGACIÓN CIENTÍFICA
+(111, 1169, 1, 129, 1722, 3, 'ACTIVO'), -- METODOLOGÍA DE LA INVESTIGACIÓN CIENTÍFICA
+(111, 1443, 1, 129, 1651, 3, 'ACTIVO'), -- NEUROPSICOLOGÍA CLÍNICA I
+(111, 1497, 1, 129, 1685, 3, 'ACTIVO'), -- NEUROPSICOLOGÍA CLÍNICA II
+(111, 1544, 1, 129, 1784, 3, 'ACTIVO'), -- PERITAJE PSICOLÓGICO
+(111, 1567, 1, 129, 1796, 3, 'ACTIVO'), -- PRÁCTICA PRE-PROFESIONAL (PSI)
+(111, 1380, 1, 129, 1618, 3, 'ACTIVO'), -- PSICOANÁLISIS
+(111, 1527, 1, 129, 1756, 3, 'ACTIVO'), -- PSICODIAGNÓSTICO
+(111, 1385, 1, 129, 1622, 3, 'ACTIVO'), -- PSICOFISIOLOGÍA
+(111, 1555, 1, 129, 1787, 3, 'ACTIVO'), -- PSICOLOGÍA CLÍNICA
+(111, 1557, 1, 129, 1790, 3, 'ACTIVO'), -- PSICOLOGÍA CLÍNICA INFANTO JUVENIL
+(111, 1450, 1, 129, 1658, 3, 'ACTIVO'), -- PSICOLOGÍA COGNITIVO CONDUCTUAL
+(111, 1569, 1, 129, 1798, 3, 'ACTIVO'), -- PSICOLOGÍA COMUNITARIA
+(111, 1530, 1, 129, 1765, 3, 'ACTIVO'), -- PSICOLOGÍA DE LA EDUCACIÓN ESPECIAL
+(111, 1475, 1, 129, 1664, 3, 'ACTIVO'), -- PSICOLOGÍA DE LA ENSEÑANZA
+(111, 1501, 1, 129, 1692, 3, 'ACTIVO'), -- PSICOLOGÍA DEL APRENDIZAJE
+(111, 1479, 1, 129, 1669, 3, 'ACTIVO'), -- PSICOLOGÍA DEL DESARROLLO I
+(111, 1503, 1, 129, 1694, 3, 'ACTIVO'), -- PSICOLOGÍA DEL DESARROLLO II
+(111, 1516, 1, 129, 1724, 3, 'ACTIVO'), -- PSICOLOGÍA EDUCATIVA I
+(111, 1534, 1, 129, 1768, 3, 'ACTIVO'), -- PSICOLOGÍA EDUCATIVA II
+(111, 1390, 1, 129, 1627, 3, 'ACTIVO'), -- PSICOLOGÍA EXPERIMENTAL Y MODIFICACIÓN DE LA CONDUCTA
+(111, 1535, 1, 129, 1772, 3, 'ACTIVO'), -- PSICOLOGÍA FORENSE
+(111, 1482, 1, 129, 1674, 3, 'ACTIVO'), -- PSICOLOGÍA LABORAL
+(111, 1506, 1, 129, 1701, 3, 'ACTIVO'), -- PSICOLOGÍA ORGANIZACIONAL I
+(111, 1519, 1, 129, 1730, 3, 'ACTIVO'), -- PSICOLOGÍA ORGANIZACIONAL II
+(111, 1403, 1, 129, 1638, 3, 'ACTIVO'), -- PSICOLOGÍA SISTÉMICA
+(111, 1342, 1, 129, 1705, 3, 'ACTIVO'), -- PSICOLOGÍA SOCIAL I
+(111, 1520, 1, 129, 1731, 3, 'ACTIVO'), -- PSICOLOGÍA SOCIAL II
+(111, 1510, 1, 129, 1715, 3, 'ACTIVO'), -- PSICOPATOLOGÍA I
+(111, 1524, 1, 129, 1737, 3, 'ACTIVO'), -- PSICOPATOLOGÍA II
+(111, 1571, 1, 129, 1802, 3, 'ACTIVO'), -- SEMINARIO DE ACTUALIZACIÓN (PSI)
+(111, 1132, 1, 129, 1603, 3, 'ACTIVO'), -- SOCIOLOGÍA I
+(111, 1572, 1, 129, 1805, 3, 'ACTIVO'), -- TERAPIA COGNITIVO CONDUCTUAL
+(111, 1573, 1, 129, 1808, 3, 'ACTIVO'), -- TERAPIA PSICOANALÍTICA
+(111, 1561, 1, 129, 1793, 3, 'ACTIVO'), -- TERAPIAS BREVES Y ALTERNATIVAS
+(111, 1593, 1, 129, 1810, 3, 'ACTIVO'); -- TERAPIA SISTEMICA
+
+
+select * from unicen.tema_unicen where id_plan_estudio = 111 and id_sede = 1;
+select * from unicen.tema_unicen where id_plan_estudio = 129 and id_sede = 3;
+
+
+select * from unicen.equivalencia_materia_unicen where id_plan_estudio_origen = 123 and id_sede_origen = 1 and id_plan_estudio_destino = 134 and id_sede_destino = 3;
+
+
+
+
+-- ================================== SANTA CRUZ DE LA SIERRA ===========================================
+
+-- ================== INGENIERIA FINANCIERA ===================
+
+INSERT INTO unicen.equivalencia_materia_unicen
+(id_plan_estudio_origen, id_materia_origen, id_sede_origen,
+ id_plan_estudio_destino, id_materia_destino, id_sede_destino, estado)
+VALUES
+(113, 1589, 1, 100, 1700, 2, 'ACTIVO'), -- ADMINISTRACIÓN FINANCIERA
+(113, 1331, 1, 100, 1233, 2, 'ACTIVO'), -- ADMINISTRACIÓN I
+(113, 1364, 1, 100, 1664, 2, 'ACTIVO'), -- ADMINISTRACIÓN II
+(113, 1469, 1, 100, 1688, 2, 'ACTIVO'), -- ADMINISTRACIÓN PÚBLICA
+(113, 1338, 1, 100, 1660, 2, 'ACTIVO'), -- ÁLGEBRA
+(113, 1382, 1, 100, 1682, 2, 'ACTIVO'), -- ANÁLISIS E INTERPRETACIÓN DE ESTADOS FINANCIEROS
+(113, 1399, 1, 100, 1752, 2, 'ACTIVO'), -- AUDITORÍA FINANCIERA I
+(113, 1409, 1, 100, 1754, 2, 'ACTIVO'), -- AUDITORÍA FINANCIERA II
+(113, 1347, 1, 100, 1661, 2, 'ACTIVO'), -- CÁLCULO I
+(113, 1472, 1, 100, 1689, 2, 'ACTIVO'), -- COMERCIO INTERNACIONAL I
+(113, 1127, 1, 100, 1127, 2, 'ACTIVO'), -- COMPUTACIÓN I
+(113, 1340, 1, 100, 1666, 2, 'ACTIVO'), -- COMPUTACIÓN II
+(113, 1367, 1, 100, 1742, 2, 'ACTIVO'), -- CONTABILIDAD AGROPECUARIA
+(113, 1345, 1, 100, 1663, 2, 'ACTIVO'), -- CONTABILIDAD BÁSICA
+(113, 1355, 1, 100, 1739, 2, 'ACTIVO'), -- CONTABILIDAD COMPUTARIZADA
+(113, 1357, 1, 100, 1670, 2, 'ACTIVO'), -- CONTABILIDAD DE COSTOS
+(113, 1386, 1, 100, 1747, 2, 'ACTIVO'), -- CONTABILIDAD DE ENTIDADES FINANCIERAS
+(113, 1368, 1, 100, 1743, 2, 'ACTIVO'), -- CONTABILIDAD DE SERVICIOS
+(113, 1361, 1, 100, 1740, 2, 'ACTIVO'), -- CONTABILIDAD DE SOCIEDADES
+(113, 1372, 1, 100, 1744, 2, 'ACTIVO'), -- CONTABILIDAD INTEGRADA
+(113, 1352, 1, 100, 1667, 2, 'ACTIVO'), -- CONTABILIDAD INTERMEDIA
+(113, 1375, 1, 100, 1745, 2, 'ACTIVO'), -- CONTABILIDAD MINERA Y PETROLERA
+(113, 1377, 1, 100, 1677, 2, 'ACTIVO'), -- COSTOS PARA DECISIONES
+(113, 1582, 1, 100, 1671, 2, 'ACTIVO'), -- DERECHO EMPRESARIAL Y COMERCIAL
+(113, 1512, 1, 100, 1741, 2, 'ACTIVO'), -- DERECHO TRIBUTARIO Y FINANCIERO
+(113, 1359, 1, 100, 1239, 2, 'ACTIVO'), -- ECONOMÍA GENERAL Y POLÍTICA
+(113, 1634, 1, 100, 1135, 2, 'ACTIVO'), -- ESTADÍSTICA
+(113, 1408, 1, 100, 1672, 2, 'ACTIVO'), -- ESTADÍSTICA AVANZADA
+(113, 1401, 1, 100, 1690, 2, 'ACTIVO'), -- FINANZAS I
+(113, 1442, 1, 100, 1696, 2, 'ACTIVO'), -- FINANZAS II
+(113, 1387, 1, 100, 1748, 2, 'ACTIVO'), -- GABINETE DE CONTABILIDAD
+(113, 1388, 1, 100, 1749, 2, 'ACTIVO'), -- GABINETE DE COSTOS
+(113, 1348, 1, 100, 1658, 2, 'ACTIVO'), -- GESTIÓN DE EMPRENDIMIENTOS
+(113, 1584, 1, 100, 1691, 2, 'ACTIVO'), -- GESTIÓN DEL CAPITAL HUMANO
+(113, 1343, 1, 100, 1684, 2, 'ACTIVO'), -- INTRODUCCIÓN A LA INVESTIGACIÓN CIENTÍFICA
+(113, 1418, 1, 100, 1673, 2, 'ACTIVO'), -- INVESTIGACIÓN DE OPERACIONES I
+(113, 1423, 1, 100, 1674, 2, 'ACTIVO'), -- MACROECONOMÍA
+(113, 1394, 1, 100, 1668, 2, 'ACTIVO'), -- MATEMÁTICA FINANCIERA
+(113, 1440, 1, 100, 1692, 2, 'ACTIVO'), -- MERCADO DE VALORES
+(113, 1169, 1, 100, 1654, 2, 'ACTIVO'), -- METODOLOGÍA DE LA INVESTIGACIÓN CIENTÍFICA
+(113, 1400, 1, 100, 1669, 2, 'ACTIVO'), -- MICROECONOMÍA
+(113, 1379, 1, 100, 1746, 2, 'ACTIVO'), -- ORGANIZACIÓN Y MÉTODOS
+(113, 1491, 1, 100, 1699, 2, 'ACTIVO'), -- PREPARACIÓN Y EVALUACIÓN DE PROYECTOS
+(113, 1365, 1, 100, 1686, 2, 'ACTIVO'); -- PRESUPUESTOS
+
+SELECT * FROM unicen.equivalencia_materia_unicen where id_plan_estudio_origen = 113 and id_sede_origen = 1 and id_plan_estudio_destino = 100 and id_sede_destino = 2;
+
+select * from unicen.tema_unicen where id_plan_estudio = 113 and id_sede = 1;
+select * from unicen.tema_unicen where id_plan_estudio = 100 and id_sede = 2;
+
+-------- FISIOTERAPIA Y KINESIOLOGIA CBBA -> SCZ ----------------
+INSERT INTO unicen.equivalencia_materia_unicen
+(id_plan_estudio_origen, id_materia_origen, id_sede_origen,
+ id_plan_estudio_destino, id_materia_destino, id_sede_destino, estado)
+VALUES
+(123, 1705, 1, 98, 1762, 2, 'ACTIVO'),
+(123, 1707, 1, 98, 1768, 2, 'ACTIVO'),
+(123, 1712, 1, 98, 1774, 2, 'ACTIVO'),
+(123, 1720, 1, 98, 1780, 2, 'ACTIVO'),
+(123, 1704, 1, 98, 1763, 2, 'ACTIVO'),
+(123, 1726, 1, 98, 1787, 2, 'ACTIVO'),
+(123, 1708, 1, 98, 1769, 2, 'ACTIVO'),
+(123, 1713, 1, 98, 1775, 2, 'ACTIVO'),
+(123, 1733, 1, 98, 1794, 2, 'ACTIVO'),
+(123, 1741, 1, 98, 1800, 2, 'ACTIVO'),
+(123, 1746, 1, 98, 1806, 2, 'ACTIVO'),
+(123, 1709, 1, 98, 1770, 2, 'ACTIVO'),
+(123, 1721, 1, 98, 1781, 2, 'ACTIVO'),
+(123, 1732, 1, 98, 1788, 2, 'ACTIVO'),
+(123, 1703, 1, 98, 1764, 2, 'ACTIVO'),
+(123, 1734, 1, 98, 1795, 2, 'ACTIVO'),
+(123, 1735, 1, 98, 1796, 2, 'ACTIVO'),
+(123, 1736, 1, 98, 1797, 2, 'ACTIVO'),
+(123, 1714, 1, 98, 1776, 2, 'ACTIVO'),
+(123, 1737, 1, 98, 1798, 2, 'ACTIVO'),
+(123, 1710, 1, 98, 1771, 2, 'ACTIVO'),
+(123, 1731, 1, 98, 1789, 2, 'ACTIVO'),
+(123, 1706, 1, 98, 1772, 2, 'ACTIVO'),
+(123, 1722, 1, 98, 1782, 2, 'ACTIVO'),
+(123, 1723, 1, 98, 1783, 2, 'ACTIVO'),
+(123, 1730, 1, 98, 1790, 2, 'ACTIVO'),
+(123, 1742, 1, 98, 1801, 2, 'ACTIVO'),
+(123, 1747, 1, 98, 1658, 2, 'ACTIVO'),
+(123, 1715, 1, 98, 1684, 2, 'ACTIVO'),
+(123, 1729, 1, 98, 1791, 2, 'ACTIVO'),
+(123, 1724, 1, 98, 1784, 2, 'ACTIVO'),
+(123, 1748, 1, 98, 1807, 2, 'ACTIVO'),
+(123, 1725, 1, 98, 1785, 2, 'ACTIVO'),
+(123, 1743, 1, 98, 1802, 2, 'ACTIVO'),
+(123, 1728, 1, 98, 1792, 2, 'ACTIVO'),
+(123, 1740, 1, 98, 1654, 2, 'ACTIVO'),
+(123, 1716, 1, 98, 1777, 2, 'ACTIVO'),
+(123, 1719, 1, 98, 1786, 2, 'ACTIVO'),
+(123, 1727, 1, 98, 1793, 2, 'ACTIVO'),
+(123, 1711, 1, 98, 1773, 2, 'ACTIVO'),
+(123, 1744, 1, 98, 1803, 2, 'ACTIVO'),
+(123, 1717, 1, 98, 1778, 2, 'ACTIVO'),
+(123, 1702, 1, 98, 1765, 2, 'ACTIVO'),
+(123, 1700, 1, 98, 1766, 2, 'ACTIVO'),
+(123, 2095, 1, 98, 1799, 2, 'ACTIVO'),
+(123, 1749, 1, 98, 1808, 2, 'ACTIVO'),
+(123, 1701, 1, 98, 1767, 2, 'ACTIVO'),
+(123, 1750, 1, 98, 1809, 2, 'ACTIVO'),
+(123, 1745, 1, 98, 1804, 2, 'ACTIVO'),
+(123, 1739, 1, 98, 1805, 2, 'ACTIVO'),
+(123, 1751, 1, 98, 1810, 2, 'ACTIVO'),
+(123, 1718, 1, 98, 1779, 2, 'ACTIVO');
+
+SELECT * FROM unicen.equivalencia_materia_unicen where id_plan_estudio_origen = 123 and id_sede_origen = 1 and id_plan_estudio_destino = 98 and id_sede_destino = 2;
+
+select * from unicen.tema_unicen where id_plan_estudio = 123 and id_sede = 1;
+select * from unicen.tema_unicen where id_plan_estudio = 98 and id_sede = 2 ORDER BY id_materia, nombre;
+
+-------- CONTADURIA PUBLICA CBBA -> SCZ ----------------
+INSERT INTO unicen.equivalencia_materia_unicen
+(id_plan_estudio_origen, id_materia_origen, id_sede_origen,
+ id_plan_estudio_destino, id_materia_destino, id_sede_destino, estado)
+VALUES
+(106, 1589, 1, 96, 1700, 2, 'ACTIVO'), -- ADMINISTRACIÓN FINANCIERA
+(106, 1331, 1, 96, 1233, 2, 'ACTIVO'), -- ADMINISTRACIÓN I
+(106, 1364, 1, 96, 1664, 2, 'ACTIVO'), -- ADMINISTRACIÓN II
+(106, 1338, 1, 96, 1660, 2, 'ACTIVO'), -- ÁLGEBRA
+(106, 1382, 1, 96, 1682, 2, 'ACTIVO'), -- ANÁLISIS E INTERPRETACIÓN DE ESTADOS FINANCIEROS
+(106, 1406, 1, 96, 1753, 2, 'ACTIVO'), -- AUDITORÍA ADMINISTRATIVA
+(106, 1396, 1, 96, 1751, 2, 'ACTIVO'), -- AUDITORÍA DE SISTEMAS
+(106, 1399, 1, 96, 1752, 2, 'ACTIVO'), -- AUDITORÍA FINANCIERA I
+(106, 1409, 1, 96, 1754, 2, 'ACTIVO'), -- AUDITORÍA FINANCIERA II
+(106, 1414, 1, 96, 1756, 2, 'ACTIVO'), -- AUDITORÍA FORENSE
+(106, 1417, 1, 96, 1757, 2, 'ACTIVO'), -- AUDITORÍA GUBERNAMENTAL
+(106, 1411, 1, 96, 1755, 2, 'ACTIVO'), -- AUDITORÍA TRIBUTARIA I
+(106, 1420, 1, 96, 1758, 2, 'ACTIVO'), -- AUDITORÍA TRIBUTARIA II
+(106, 1347, 1, 96, 1661, 2, 'ACTIVO'), -- CÁLCULO I
+(106, 1472, 1, 96, 1689, 2, 'ACTIVO'), -- COMERCIO INTERNACIONAL I
+(106, 1127, 1, 96, 1127, 2, 'ACTIVO'), -- COMPUTACIÓN I
+(106, 1340, 1, 96, 1666, 2, 'ACTIVO'), -- COMPUTACIÓN II
+(106, 1367, 1, 96, 1742, 2, 'ACTIVO'), -- CONTABILIDAD AGROPECUARIA
+(106, 1345, 1, 96, 1663, 2, 'ACTIVO'), -- CONTABILIDAD BÁSICA
+(106, 1355, 1, 96, 1739, 2, 'ACTIVO'), -- CONTABILIDAD COMPUTARIZADA
+(106, 1357, 1, 96, 1670, 2, 'ACTIVO'), -- CONTABILIDAD DE COSTOS
+(106, 1386, 1, 96, 1747, 2, 'ACTIVO'), -- CONTABILIDAD DE ENTIDADES FINANCIERAS
+(106, 1368, 1, 96, 1743, 2, 'ACTIVO'), -- CONTABILIDAD DE SERVICIOS
+(106, 1361, 1, 96, 1740, 2, 'ACTIVO'), -- CONTABILIDAD DE SOCIEDADES
+(106, 1372, 1, 96, 1744, 2, 'ACTIVO'), -- CONTABILIDAD INTEGRADA
+(106, 1352, 1, 96, 1667, 2, 'ACTIVO'), -- CONTABILIDAD INTERMEDIA
+(106, 1375, 1, 96, 1745, 2, 'ACTIVO'), -- CONTABILIDAD MINERA Y PETROLERA
+(106, 1377, 1, 96, 1677, 2, 'ACTIVO'), -- COSTOS PARA DECISIONES
+(106, 1529, 1, 96, 1264, 2, 'ACTIVO'), -- DERECHO DEL TRABAJO Y SEGURIDAD SOCIAL
+(106, 1582, 1, 96, 1671, 2, 'ACTIVO'), -- DERECHO EMPRESARIAL Y COMERCIAL
+(106, 1512, 1, 96, 1741, 2, 'ACTIVO'), -- DERECHO TRIBUTARIO Y FINANCIERO
+(106, 1359, 1, 96, 1239, 2, 'ACTIVO'), -- ECONOMÍA GENERAL Y POLÍTICA
+(106, 1634, 1, 96, 1135, 2, 'ACTIVO'), -- ESTADÍSTICA
+(106, 1401, 1, 96, 1690, 2, 'ACTIVO'), -- FINANZAS I
+(106, 1422, 1, 96, 1759, 2, 'ACTIVO'), -- GABINETE DE AUDITORÍA
+(106, 1387, 1, 96, 1748, 2, 'ACTIVO'), -- GABINETE DE CONTABILIDAD
+(106, 1388, 1, 96, 1749, 2, 'ACTIVO'), -- GABINETE DE COSTOS
+(106, 1348, 1, 96, 1658, 2, 'ACTIVO'), -- GESTIÓN DE EMPRENDIMIENTOS
+(106, 1584, 1, 96, 1691, 2, 'ACTIVO'), -- GESTIÓN DEL CAPITAL HUMANO
+(106, 1343, 1, 96, 1684, 2, 'ACTIVO'), -- INTRODUCCIÓN A LA INVESTIGACIÓN CIENTÍFICA
+(106, 1418, 1, 96, 1673, 2, 'ACTIVO'), -- INVESTIGACIÓN DE OPERACIONES I
+(106, 1423, 1, 96, 1674, 2, 'ACTIVO'), -- MACROECONOMÍA
+(106, 1394, 1, 96, 1668, 2, 'ACTIVO'), -- MATEMÁTICA FINANCIERA
+(106, 1169, 1, 96, 1654, 2, 'ACTIVO'), -- METODOLOGÍA DE LA INVESTIGACIÓN CIENTÍFICA
+(106, 1400, 1, 96, 1669, 2, 'ACTIVO'), -- MICROECONOMÍA
+(106, 1379, 1, 96, 1746, 2, 'ACTIVO'), -- ORGANIZACIÓN Y MÉTODOS
+(106, 1426, 1, 96, 1760, 2, 'ACTIVO'), -- PRÁCTICA PRE-PROFESIONAL (CPA)
+(106, 1491, 1, 96, 1699, 2, 'ACTIVO'), -- PREPARACIÓN Y EVALUACIÓN DE PROYECTOS
+(106, 1365, 1, 96, 1686, 2, 'ACTIVO'), -- PRESUPUESTOS
+(106, 1392, 1, 96, 1750, 2, 'ACTIVO'), -- SEMINARIO DE ACTUALIZACIÓN I (CPA)
+(106, 1431, 1, 96, 1761, 2, 'ACTIVO'); -- SEMINARIO DE ACTUALIZACIÓN II (CPA)
+
+
+select * from unicen.tema_unicen where id_plan_estudio = 106 and id_sede = 1;
+select * from unicen.tema_unicen where id_plan_estudio = 96 and id_sede = 2 ORDER BY id_materia, nombre;
+
+
+-------- PROPAGANDA PUBLICIDAD Y MARKETING CBBA -> SCZ ----------------
+INSERT INTO unicen.equivalencia_materia_unicen
+(id_plan_estudio_origen, id_materia_origen, id_sede_origen,
+ id_plan_estudio_destino, id_materia_destino, id_sede_destino, estado)
+VALUES
+(107, 1331, 1, 101, 1233, 2, 'ACTIVO'), -- ADMINISTRACIÓN I
+(107, 1435, 1, 101, 1846, 2, 'ACTIVO'), -- CAMPAÑAS PUBLICITARIAS
+(107, 1462, 1, 101, 1854, 2, 'ACTIVO'), -- CAMPAÑAS SOCIALES
+(107, 1587, 1, 101, 1812, 2, 'ACTIVO'), -- COMPORTAMIENTO DEL CONSUMIDOR
+(107, 1127, 1, 101, 1127, 2, 'ACTIVO'), -- COMPUTACIÓN I
+(107, 1336, 1, 101, 1833, 2, 'ACTIVO'), -- COMUNICACIÓN I
+(107, 1391, 1, 101, 1836, 2, 'ACTIVO'), -- COMUNICACIÓN II
+(107, 1332, 1, 101, 1831, 2, 'ACTIVO'), -- CREATIVIDAD
+(107, 1582, 1, 101, 1671, 2, 'ACTIVO'), -- DERECHO EMPRESARIAL Y COMERCIAL
+(107, 1494, 1, 101, 1701, 2, 'ACTIVO'), -- DIRECCIÓN EJECUTIVA
+(107, 1595, 1, 101, 1860, 2, 'ACTIVO'), -- DISEÑO GRÁFICO I
+(107, 1395, 1, 101, 1837, 2, 'ACTIVO'), -- DISEÑO GRÁFICO II
+(107, 1485, 1, 101, 1695, 2, 'ACTIVO'), -- E-COMMERCE
+(107, 1359, 1, 101, 1239, 2, 'ACTIVO'), -- ECONOMÍA GENERAL Y POLÍTICA
+(107, 1634, 1, 101, 1135, 2, 'ACTIVO'), -- ESTADÍSTICA
+(107, 1466, 1, 101, 1855, 2, 'ACTIVO'), -- ÉTICA PROFESIONAL EN LA COMUNICACIÓN COMERCIAL
+(107, 1415, 1, 101, 1841, 2, 'ACTIVO'), -- FOTOGRAFÍA
+(107, 1348, 1, 101, 1658, 2, 'ACTIVO'), -- GESTIÓN DE EMPRENDIMIENTOS
+(107, 1474, 1, 101, 1817, 2, 'ACTIVO'), -- GESTIÓN DE VENTAS
+(107, 1453, 1, 101, 1850, 2, 'ACTIVO'), -- IMAGEN E IDENTIDAD VISUAL (COMUNICACIÓN CORPORATIVA)
+(107, 1343, 1, 101, 1684, 2, 'ACTIVO'), -- INTRODUCCIÓN A LA INVESTIGACIÓN CIENTÍFICA
+(107, 1465, 1, 101, 1685, 2, 'ACTIVO'), -- INVESTIGACIÓN DE MERCADOS I
+(107, 1583, 1, 101, 1818, 2, 'ACTIVO'), -- INVESTIGACIÓN DE MERCADOS II
+(107, 1384, 1, 101, 1834, 2, 'ACTIVO'), -- LENGUAJE AUDIOVISUAL
+(107, 1514, 1, 101, 1820, 2, 'ACTIVO'), -- MARKETING DE SERVICIOS Y SOCIAL
+(107, 1496, 1, 101, 1702, 2, 'ACTIVO'), -- MARKETING DIGITAL
+(107, 1428, 1, 101, 1675, 2, 'ACTIVO'), -- MARKETING I
+(107, 1452, 1, 101, 1680, 2, 'ACTIVO'), -- MARKETING II
+(107, 1508, 1, 101, 1815, 2, 'ACTIVO'), -- MARKETING III
+(107, 1586, 1, 101, 1822, 2, 'ACTIVO'), -- MARKETING INTERNACIONAL
+(107, 1513, 1, 101, 1819, 2, 'ACTIVO'), -- MARKETING IV
+(107, 1588, 1, 101, 1816, 2, 'ACTIVO'), -- MERCHANDISING
+(107, 1169, 1, 101, 1654, 2, 'ACTIVO'), -- METODOLOGÍA DE LA INVESTIGACIÓN CIENTÍFICA
+(107, 1470, 1, 101, 1857, 2, 'ACTIVO'), -- PRÁCTICA PRE-PROFESIONAL (PPM)
+(107, 1402, 1, 101, 1838, 2, 'ACTIVO'), -- PRODUCCIÓN Y EDICIÓN I
+(107, 1419, 1, 101, 1842, 2, 'ACTIVO'), -- PRODUCCIÓN Y EDICIÓN II
+(107, 1438, 1, 101, 1847, 2, 'ACTIVO'), -- PROPAGANDA I
+(107, 1455, 1, 101, 1851, 2, 'ACTIVO'), -- PROPAGANDA II
+(107, 1471, 1, 101, 1858, 2, 'ACTIVO'), -- PROYECTOS PUBLICITARIOS
+(107, 1581, 1, 101, 1843, 2, 'ACTIVO'), -- PSICOLOGÍA PUBLICITARIA
+(107, 1342, 1, 101, 1236, 2, 'ACTIVO'), -- PSICOLOGÍA SOCIAL I
+(107, 1362, 1, 101, 1813, 2, 'ACTIVO'), -- PUBLICIDAD
+(107, 1441, 1, 101, 1848, 2, 'ACTIVO'), -- PUBLICIDAD AUDIOVISUAL
+(107, 1407, 1, 101, 1839, 2, 'ACTIVO'), -- PUBLICIDAD ESTRATÉGICA
+(107, 1412, 1, 101, 1840, 2, 'ACTIVO'), -- REDACCIÓN PUBLICITARIA
+(107, 1467, 1, 101, 1856, 2, 'ACTIVO'), -- SEMINARIO DE ACTUALIZACIÓN (PPM)
+(107, 1427, 1, 101, 1844, 2, 'ACTIVO'), -- SEMIOLOGÍA PUBLICITARIA
+(107, 1132, 1, 101, 1132, 2, 'ACTIVO'), -- SOCIOLOGÍA I
+(107, 1456, 1, 101, 1852, 2, 'ACTIVO'), -- TALLER DE CAMPAÑAS PUBLICITARIAS
+(107, 1473, 1, 101, 1859, 2, 'ACTIVO'), -- TALLER DE CAMPAÑAS SOCIALES
+(107, 1334, 1, 101, 1832, 2, 'ACTIVO'), -- TALLER DE DISEÑO
+(107, 1445, 1, 101, 1849, 2, 'ACTIVO'), -- TALLER DE FOTOGRAFÍA PUBLICITARIA
+(107, 1460, 1, 101, 1853, 2, 'ACTIVO'), -- TALLER DE PUBLICIDAD AUDIOVISUAL
+(107, 1432, 1, 101, 1845, 2, 'ACTIVO'); -- TALLER DE PUBLICIDAD DIGITAL Y ONLINE (MULTIMEDIA)
+SELECT * FROM unicen.carrera where id_carrera = 65 and id_sede = 2;
+
+-- administracion de empresas turisticas y gastronomicas CBBA -> SCZ
+
+INSERT INTO unicen.equivalencia_materia_unicen
+(id_plan_estudio_origen, id_materia_origen, id_sede_origen,
+id_plan_estudio_destino, id_materia_destino, id_sede_destino, estado)
+VALUES
+(105, 1349, 1, 95, 1713, 2, 'ACTIVO'),
+(105, 1363, 1, 95, 1717, 2, 'ACTIVO'),
+(105, 1404, 1, 95, 1728, 2, 'ACTIVO'),
+(105, 1331, 1, 95, 1233, 2, 'ACTIVO'),
+(105, 1364, 1, 95, 1664, 2, 'ACTIVO'),
+(105, 1559, 1, 95, 789, 2, 'ACTIVO'),
+(105, 1410, 1, 95, 1729, 2, 'ACTIVO'),
+(105, 1127, 1, 95, 1127, 2, 'ACTIVO'),
+(105, 1345, 1, 95, 1663, 2, 'ACTIVO'),
+(105, 1357, 1, 95, 1670, 2, 'ACTIVO'),
+(105, 1352, 1, 95, 1667, 2, 'ACTIVO'),
+(105, 1590, 1, 95, 1718, 2, 'ACTIVO'),
+(105, 1359, 1, 95, 1239, 2, 'ACTIVO'),
+(105, 1383, 1, 95, 1724, 2, 'ACTIVO'),
+(105, 1416, 1, 95, 1730, 2, 'ACTIVO'),
+(105, 1350, 1, 95, 1714, 2, 'ACTIVO'),
+(105, 1371, 1, 95, 1719, 2, 'ACTIVO'),
+(105, 1634, 1, 95, 1135, 2, 'ACTIVO'),
+(105, 1348, 1, 95, 1658, 2, 'ACTIVO'),
+(105, 1584, 1, 95, 1691, 2, 'ACTIVO'),
+(105, 1339, 1, 95, 1709, 2, 'ACTIVO'),
+(105, 1341, 1, 95, 1710, 2, 'ACTIVO'),
+(105, 1343, 1, 95, 1684, 2, 'ACTIVO'),
+(105, 1465, 1, 95, 1685, 2, 'ACTIVO'),
+(105, 1389, 1, 95, 1725, 2, 'ACTIVO'),
+(105, 1594, 1, 95, 1720, 2, 'ACTIVO'),
+(105, 1428, 1, 95, 1675, 2, 'ACTIVO'),
+(105, 1169, 1, 95, 1654, 2, 'ACTIVO'),
+(105, 1354, 1, 95, 1715, 2, 'ACTIVO'),
+(105, 1344, 1, 95, 1711, 2, 'ACTIVO'),
+(105, 1374, 1, 95, 1721, 2, 'ACTIVO'),
+(105, 1378, 1, 95, 1722, 2, 'ACTIVO'),
+(105, 1393, 1, 95, 1726, 2, 'ACTIVO'),
+(105, 1421, 1, 95, 1731, 2, 'ACTIVO'),
+(105, 1491, 1, 95, 1699, 2, 'ACTIVO'),
+(105, 1365, 1, 95, 1686, 2, 'ACTIVO'),
+(105, 1430, 1, 95, 1733, 2, 'ACTIVO'),
+(105, 1132, 1, 95, 1132, 2, 'ACTIVO'),
+(105, 1444, 1, 95, 1736, 2, 'ACTIVO'),
+(105, 1448, 1, 95, 1737, 2, 'ACTIVO'),
+(105, 1434, 1, 95, 1734, 2, 'ACTIVO'),
+(105, 1454, 1, 95, 1738, 2, 'ACTIVO'),
+(105, 1333, 1, 95, 1707, 2, 'ACTIVO'),
+(105, 1346, 1, 95, 1712, 2, 'ACTIVO'),
+(105, 1358, 1, 95, 1716, 2, 'ACTIVO'),
+(105, 1381, 1, 95, 1723, 2, 'ACTIVO'),
+(105, 1398, 1, 95, 1727, 2, 'ACTIVO'),
+(105, 1425, 1, 95, 1732, 2, 'ACTIVO'),
+(105, 1335, 1, 95, 1708, 2, 'ACTIVO'),
+(105, 1437, 1, 95, 1735, 2, 'ACTIVO');
+
+SELECT * FROM unicen.tema_unicen where id_plan_estudio = 95 and id_sede = 2;
+
+SELECT * FROM unicen.tema_unicen where id_plan_estudio = 105 and id_sede = 1;
+
+
+
+
+
+DELETE FROM unicen.equivalencia_materia_unicen where id_plan_estudio_origen = 105 and id_sede_origen = 1 and id_plan_estudio_destino = 95 and id_sede_destino = 2;
+
+delete from unicen.tema_unicen where id_plan_estudio = 95 and id_sede = 2;
+
+SELECT * FROM unicen.tema_unicen where id_plan_estudio = 123 and id_sede = 1;
+
+SELECT * FROM unicen.tema where id_plan_estudio = 134 and id_sede = 3;
+
+select * from unicen.tema where id_materia = 1577;
+
+ROLLBACK;
+
+select * from  unicen.equivalencia_materia_unicen where id_plan_estudio_origen = 123 and id_sede_origen = 1 and id_plan_estudio_destino = 134 and id_sede_destino = 3;
+
+
+select * from unicen.plan_estudio where id_plan_estudio = 134 and id_sede = 3;
+
+SELECT * FROM unicen.tema_unicen where id_plan_estudio = 123 and id_sede = 1;
+
+SELECT * FROM unicen.tema_unicen where id_plan_estudio = 113 and id_sede = 1;
+
+
+
+SELECT * FROM unicen.equivalencia_materia_unicen where id_plan_estudio_origen = 113 and id_sede_origen = 1 and id_plan_estudio_destino = 136 and id_sede_destino = 3;
+
+DELETE FROM unicen.equivalencia_materia_unicen where id_plan_estudio_origen = 113 and id_sede_origen = 1 and id_plan_estudio_destino = 136 and id_sede_destino = 3;
+
+
+select * from unicen.tema_unicen where id_plan_estudio = 66 and id_sede = 2;
+
+DELETE FROM unicen.tema_unicen WHERE id_plan_estudio = 136 and id_sede = 3;
+
+DROP PROCEDURE IF EXISTS unicen.agregar_temas_unicen(integer, integer, integer, integer);
+CREATE OR REPLACE PROCEDURE unicen.agregar_temas_unicen(p_id_plan_estudio_origen integer,p_id_sede_origen integer, p_id_plan_estudio_destino integer, p_id_sede_destino integer)
+AS $$
+    BEGIN
+        INSERT INTO unicen.tema_unicen (
+            id_plan_estudio,
+            id_materia,
+            nombre,
+            titulo,
+            contenido,
+            id_sede,
+            estado
+        )
+        SELECT emu.id_plan_estudio_destino, emu.id_materia_destino, t.nombre, t.titulo, t.contenido, p_id_sede_destino, 'ACTIVO'
+        FROM unicen.tema_unicen t
+        JOIN (SELECT * 
+            FROM unicen.equivalencia_materia_unicen emu_aux  
+            WHERE  emu_aux.id_sede_origen = p_id_sede_origen 
+                    and emu_aux.id_plan_estudio_origen = p_id_plan_estudio_origen 
+                    and emu_aux.id_sede_destino = p_id_sede_destino 
+                    and emu_aux.id_plan_estudio_destino = p_id_plan_estudio_destino
+            ) emu
+        ON t.id_materia = emu.id_materia_origen
+            AND t.id_plan_estudio = emu.id_plan_estudio_origen AND t.id_sede = emu.id_sede_origen;
+    END;
+$$ LANGUAGE plpgsql;
+
+DROP PROCEDURE IF EXISTS unicen.pr_agregar_tema_unicen_de_materia(integer, integer, integer, integer, integer, integer);
+
+
+
+CREATE OR REPLACE PROCEDURE unicen.pr_agregar_tema_unicen_de_materia(
+    p_id_plan_estudio_origen integer,
+    p_id_materia_origen integer,
+    p_id_sede_origen integer,
+    p_id_plan_estudio_destino integer,
+    p_id_materia_destino integer,
+    p_id_sede_destino integer
+) AS $$
+BEGIN
+    INSERT INTO unicen.tema_unicen(
+        id_plan_estudio,
+        id_materia,
+        nombre,
+        titulo,
+        contenido,
+        id_sede,
+        estado
+    )
+    SELECT emu.id_plan_estudio_destino, emu.id_materia_destino, t.nombre, t.titulo, t.contenido, p_id_sede_destino, 'ACTIVO'
+    FROM unicen.tema_unicen t
+    JOIN (SELECT * 
+        FROM unicen.equivalencia_materia_unicen emu_aux  
+        WHERE  emu_aux.id_sede_origen = p_id_sede_origen 
+                and emu_aux.id_plan_estudio_origen = p_id_plan_estudio_origen 
+                and emu_aux.id_materia_origen = p_id_materia_origen
+                and emu_aux.id_sede_destino = p_id_sede_destino 
+                and emu_aux.id_plan_estudio_destino = p_id_plan_estudio_destino
+                and emu_aux.id_materia_destino = p_id_materia_destino
+        ) emu
+    ON t.id_materia = emu.id_materia_origen
+        AND t.id_plan_estudio = emu.id_plan_estudio_origen AND t.id_sede = emu.id_sede_origen;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+-
+begin;
+CALL unicen.agregar_temas_unicen(113, 1, 136, 3);
+CALL unicen.agregar_temas_unicen(83, 1, 105, 3);
+
+select * from unicen.tema_unicen where id_plan_estudio = 136 and id_sede = 3;
+
+COMMIT;
+
+DELETE FROM unicen.tema_unicen WHERE id_plan_estudio = 136 and id_sede = 3;
+
+ROLLBACK;
+
+ROLLBACK;
+
+SELECT emu.id_plan_estudio_destino, emu.id_materia_destino, t.nombre, t.titulo, t.contenido, id_sede_destino, 'ACTIVO'
+        FROM unicen.tema t
+        JOIN (SELECT * 
+            FROM unicen.equivalencia_materia_unicen emu_aux  
+            WHERE  emu_aux.id_sede_origen = 1 and emu_aux.id_plan_estudio_origen = 113) emu
+        ON t.id_materia = emu.id_materia_origen
+            AND t.id_plan_estudio = emu.id_plan_estudio_origen AND t.id_sede = emu.id_sede_origen;
+
+
+SELECT * 
+FROM unicen.equivalencia_materia_unicen emu_aux  
+WHERE  emu_aux.id_sede_origen = 1 and emu_aux.id_plan_estudio_origen = 113
+
+
+
+CREATE OR REPLACE FUNCTION unicen.trg_fn_actualizar_temas_unicen()
+ RETURNS trigger
+ LANGUAGE plpgsql
+ AS $$
+    BEGIN
+        RAISE NOTICE 'Trigger activado para equivalencia_materia_unicen: %', NEW;
+        CALL unicen.pr_agregar_tema_unicen_de_materia(NEW.id_plan_estudio_origen, NEW.id_materia_origen, NEW.id_sede_origen, NEW.id_plan_estudio_destino, NEW.id_materia_destino, NEW.id_sede_destino);
+        RETURN NEW;
+    END;
+ 
+ $$;
+
+
+CREATE TRIGGER trg_actualizar_temas_unicen
+AFTER INSERT ON unicen.equivalencia_materia_unicen
+FOR EACH ROW 
+EXECUTE PROCEDURE unicen.trg_fn_actualizar_temas_unicen();
+
+
+
+
+SELECT car.id_carrera,nombre, count(*) FROM unicen.carrera car JOIN unicen.estudiantecareco est ON car.id_carrera = est.id_carrera WHERE car.id_sede = 3 GROUP BY nombre,car.id_carrera ORDER BY count DESC;
+
+SELECT car.id_carrera,nombre, count(*) FROM unicen.carrera car JOIN unicen.estudiantecareco est ON car.id_carrera = est.id_carrera WHERE car.id_sede = 1 GROUP BY nombre,car.id_carrera ORDER BY count DESC;
+
+SELECT car.id_carrera,nombre, count(*) FROM unicen.carrera car JOIN unicen.estudiantecareco est ON car.id_carrera = est.id_carrera WHERE car.id_sede = 2 GROUP BY nombre,car.id_carrera ORDER BY count DESC;
+
+
+SELECT * FROM unicen.tema_unicen where id_plan_estudio = 94 and id_sede = 2;
+
+select * from unicen.usuario WHERE unicodigo = 4137;
+
+
+
+
+select * from unicen.estudiantecareco where unicodigo = 35913;
