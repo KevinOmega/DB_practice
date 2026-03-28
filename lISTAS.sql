@@ -1,6 +1,21 @@
+-- seleccionar a todos los estudiantes de n sede que no salen en listas
 
+SELECT DISTINCT unicodigo FROM unicen.nota WHERE id_gestion = 105 and id_sede = 1 and nf = 0 and unicodigo NOT IN (
+    SELECT unicodigo from unicen.inscripcion where id_gestion = 105 and id_sede = 1 and estinsceco = 'INSCRITO'
+);
+
+-- Correr funcion para inscribir a estudiantes que cumplen la condicion necesaria
+SELECT * FROM unicen.fn_aux_inscribir_estudiante_reserva_por_unicodigo(
+    (SELECT ARRAY(SELECT DISTINCT unicodigo FROM unicen.nota where id_gestion = 105 and id_sede = 1 and nf = 0 and unicodigo NOT IN (
+    SELECT unicodigo from unicen.inscripcion where id_gestion = 105 and id_sede = 1 and estinsceco = 'INSCRITO'
+))), 1, 105);
+
+
+SELECT unicodigo,paterno,materno, nombres from unicen.estudiante where paterno = 'ARROYO' and materno LIKE 'GUZM%' and nombres LIKE 'MA%'
 
 select * from unicen.usuario where unicodigo = 4137;
+
+SELECT * FROM unicen.usuario where unicodigo = 4137;
 
 select * from unicen.estudiante where unicodigo IN (
     select unicodigo from unicen.inscripcion where id_gestion = 105 and id_sede = 3 and id_carrera = 54

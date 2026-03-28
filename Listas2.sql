@@ -15,6 +15,28 @@ select DISTINCT uni from unicen.listarantiguosxgestionsinobs(105, 3)
 INTERSECT
 SELECT DISTINCT uni from unicen.listarnuevosxgestionsinobs(105, 3);
 
+SELECT * FROM unicen.materia where id_materia = 157;
+
+SELECT nt.id_materia, m.nombre, nt.id_plan_estudio, nt.id_gestion, nt.paralelo, nt.nf, nt.nfr FROM unicen.notahom nt
+JOIN materia m ON nt.id_materia = m.id_materia 
+WHERE nt.unicodigo = 34501 and m.id_sede = 3;
+
+SELECT * FROM unicen.materia where nombre = 'DERECHO PROCESAL CONSTITUCIONAL' AND id_sede = 3;
+
+SELECT * FROM unicen.notahom where unicodigo = 19667 and id_plan_estudio = 13;
+
+SELECT * FROM  
+
+SELECT * FROM unicen.estudiantecarecohom where unicodigo = 19667;
+
+DELETE from unicen.nota where unicodigo = 19667 and id_plan_estudio = 13;
+
+INSERT INTO unicen.notahom (
+	unicodigo,id_estudiante, id_materia, id_plan_estudio, id_gestion, id_turno, pp, sp, tp, si, ma, gr, nf, nfr, est, estnota, id_grupo, paralelo
+)
+SELECT unicodigo, id_estudiante, id_materia, id_plan_estudio, id_gestion, id_turno, pp, sp, tp, si, ma, gr, nf, nfr, est, estnota, id_grupo, paralelo FROM unicen.nota nt
+WHERE unicodigo = 19667 and id_plan_estudio = 13;
+
 
 
 SELECT * FROM unicen.nota where unicodigo = 28423;
