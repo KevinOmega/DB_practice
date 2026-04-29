@@ -22,13 +22,19 @@ SELECT * from unicen.rol where nombre = 'ESTUDIANTE';
 
 SELECT * FROM unicen.estudiante where paterno = 'DORADO' and materno = 'SILVA';
 
-SELECT num_documento, md5(num_documento), pass from unicen.estudiante where unicodigo IN (
-    SELECT unicodigo FROM unicen.usuarioest WHERE id_sede = 2 and id_rol = 17
-) and pass <> md5(num_documento) and id_sede = 2;
 
+
+SELECT unicodigo,num_documento, md5(num_documento), pass from unicen.estudiante where unicodigo IN (
+    SELECT unicodigo FROM unicen.usuarioest WHERE id_sede = 3 and id_rol = 18
+) and pass <> md5(num_documento) and id_sede = 3;
+
+
+BEGIN;
 UPDATE unicen.estudiante SET pass = md5(num_documento) where unicodigo IN (
     SELECT unicodigo FROM unicen.usuarioest WHERE id_sede = 3 and id_rol = 18
 ) and pass <> md5(num_documento) and id_sede = 3;
+
+COMMIT;
 
 BEGIN;
 

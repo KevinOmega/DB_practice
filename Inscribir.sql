@@ -1470,3 +1470,83 @@ SELECT * FROM unicen.gestion where nombre = 'V/2026';
 SELECT * FROM unicen.inscripcion where unicodigo = 34465;
 
 
+34501
+19667
+19977
+19492
+
+SELECT * FROM unicen.carrera where nombre like 'PSICOLOG%' and id_sede = 1;
+
+select * from unicen.plan_estudio where id_carrera = 84 and id_sede = 1;
+
+ROLLBACK;
+BEGIN;
+
+SELECT * from unicen.estudiantecareco where unicodigo IN (
+    34501,
+    19667,
+    19977,
+    19492
+) AND id_sede = 3;
+
+UPDATE unicen.estudiantecareco SET id_plan_estudio = 179 WHERE unicodigo IN (
+    34501,
+    19667,
+    19977,
+    19492
+) AND id_plan_estudio = 133;
+
+SELECT * FROM unicen.nota where unicodigo IN (
+    34501,
+    19667,
+    19977,
+    19492
+) AND id_plan_estudio = 179 AND id_sede = 3 ORDER BY freg ASC;
+
+select * from unicen.carre
+COMMIT;
+
+DELETE FROM unicen.nota where unicodigo = 34501 and paralelo = 'HOM/CONV' and id_plan_estudio = 133 and id_sede = 3;
+
+SELECT * FROM unicen.nota where unicodigo  = 34501 and id_plan_estudio = 133;
+
+
+SELECT * FROM unicen.nota
+
+SELECT unicodigo, id_estudiante, nombres, paterno, materno from unicen.estudiante where nombres like '%ORLANDO%' and id_sede = 1 ORDER BY nombres;
+
+SELECT id_plan_estudio from unicen.estudiantecareco where unicodigo =34868;
+
+SELECT * from unicen.nota where unicodigo = 34868 and id_gestion = 105;
+
+
+SELECT * FROM unicen.grupo where id_materia = 1582 and id_gestion = 105 and id_plan_estudio = 113;
+
+SELECT  * FROM unicen.materia where cod_materia='DCJ538';
+
+SELECT * FROM unicen.materia where nombre = 'DERECHO EMPRESARIAL' and id_materia IN(
+    13331,1359,1338,1582,1127,1345,1347
+    ) and id_sede = 1;
+
+SELECT * FROM unicen.nota where unicodigo = 34868 and id_gestion = 105;
+
+BEGIN;
+
+CALL unicen.pr_aux_add_nota_estudiante(
+    34868,
+    null,
+    ARRAY[
+        'DERECHO EMPRESARIAL Y COMERCIAL'
+     ],
+    113,
+    1,
+    105,
+    'A',
+    1
+);
+
+rollback;
+
+
+
+commit;

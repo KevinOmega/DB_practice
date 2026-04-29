@@ -11,7 +11,11 @@ select * from unicen.estudiante where unicodigo IN (
 select * from unicen.inscripcion where id_gestion = 105 and id_sede = 3 and id_carrera = 54 AND estinsceco = 'INSCRITO';
 
 
+SELECT DISTINCT unicodigo FROM unicen.nota where id_gestion = 105 and id_sede = 2 and nf = 0 and unicodigo NOT IN (
+    SELECT unicodigo from unicen.inscripcion where id_gestion = 105 and id_sede = 2 and estinsceco = 'INSCRITO'
+);
 
+SELECT * FROM unicen.inscripcion where unicodigo = 16649;
 
 select * from unicen.tema where id_sede = 3 and id_plan_estudio = 
 
@@ -24,10 +28,13 @@ SELECT estinsceco FROM unicen.inscripcion where id_sede = 2 and estinsceco <> 'I
     SELECT DISTINCT unicodigo FROM unicen.nota where id_gestion = 105 and id_sede = 2 and nf = 0
 );
 
+SELECT num_documento from unicen.estudiante where unicodigo = 35940;
+SELECT * FROM unicen.inscripcion where unicodigo = 35940 and id_gestion = 105;
+
 SELECT * FROM unicen.fn_aux_inscribir_estudiante_reserva_por_unicodigo(
-    (SELECT ARRAY(SELECT DISTINCT unicodigo FROM unicen.nota where id_gestion = 105 and id_sede = 1 and nf = 0 and unicodigo NOT IN (
-    SELECT unicodigo from unicen.inscripcion where id_gestion = 105 and id_sede = 1 and estinsceco = 'INSCRITO'
-))), 1, 105);
+    (SELECT ARRAY(SELECT DISTINCT unicodigo FROM unicen.nota where id_gestion = 105 and id_sede = 2 and nf = 0 and unicodigo NOT IN (
+    SELECT unicodigo from unicen.inscripcion where id_gestion = 105 and id_sede = 2 and estinsceco = 'INSCRITO'
+))), 2, 105);
 
 SELECT * FROM unicen.fn_aux_inscribir_estudiante_reserva_por_unicodigo(ARRAY[11082], 1, 105);
 
@@ -79,4 +86,10 @@ SELECT id_materia from unicen.materia where nombre = 'COMPUTACION I' and id_sede
 
 SELECT id_materia,id_nivel FROM unicen.plan_materia where id_plan_estudio = 133 and id_materia IN (157,1779);
 
+SELECT * FROM unicen.estudiantecareco where unicodigo = 36011;
 
+
+SELECT ma.nombre, ma.cod_materia, nt.paralelo, nt.id_turno
+    FROM unicen.nota nt
+    JOIN unicen.materia ma ON nt.id_materia = ma.id_materia and ma.id_sede = 1
+WHERE nt.unicodigo = 36034 and id_gestion = 105;

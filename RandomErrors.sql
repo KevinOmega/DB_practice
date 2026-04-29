@@ -107,6 +107,7 @@ CREATE OR REPLACE FUNCTION unicen.fn_aux_inscribir_estudiante_reserva_por_unicod
 12753
 35817
 
+SELECT * FROM unicen.usuario where unicodigo = 4137;
 
 select unicodigo, estinsceco from unicen.inscripcion where unicodigo IN (17450, 17184, 16666, 12753, 12721, 12879, 12784, 12598, 12605, 12612, 17279, 17403, 34178, 12899, 33869, 16666, 17184, 12881, 17450, 3599, 34162, 34835, 4036, 3955, 18492, 34956, 33884, 15991, 12638, 12753, 35817) and id_sede =2 and id_gestion =105;
 

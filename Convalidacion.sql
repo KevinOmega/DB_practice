@@ -201,3 +201,37 @@ begin
 				order by aux.ord ASC;
 end;
 $BODY$;
+
+
+SELECT distinct ROW_NUMBER() OVER (ORDER BY  equimat.id_equivalencia_materias) as numer, equimat.id_equivalencia_materias,equimat.materia_externa,
+ 						equimat.id_materia_externa,
+ 						equimat.cod_mat_externo,equimat.carga_horaria,equimat.materia_local,
+						mat.id_materia,
+						equimat.cod_mat_local, equimat.id_plan_estudio
+				FROM unicen.equivalencia_materias equimat
+				inner join unicen.nota nt on equimat.id_materia = nt.id_materia and nt.id_sede=2 and nt.unicodigo=18377
+				inner join unicen.materia mat on nt.id_materia = mat.id_materia and mat.id_sede=2
+
+				inner join unicen.plan_materia pm on nt.id_materia= pm.id_materia and pm.id_sede=2
+				inner join unicen.gestion ges on nt.id_gestion = ges.id_gestion
+				inner join unicen.plan_estudio pl on nt.id_plan_estudio = pl.id_plan_estudio and pl.id_sede=2
+
+				INNER JOIN unicen.universidad_externa uniext ON uniext.id_universidad_externa = equimat.id_universidad_externa
+				WHERE equimat.id_plan_estudio=96 and uniext.unicodigo=18377 and (nt.paralelo = 'PRECONVALIDADO' OR nt.paralelo = 'CONVALIDADO') and pm.id_plan_estudio=96 and nt.unicodigo=18377;
+
+
+
+EXPLAIN (FORMAT JSON)
+SELECT equimat.id_equivalencia_materias,
+       equimat.id_materia_externa,
+       equimat.cod_mat_externo,
+       equimat.carga_horaria,
+       equimat.materia_local,
+       equimat.id_materia_externa as id_materia,
+       equimat.cod_mat_local,
+       equimat.id_plan_estudio
+FROM unicen.equivalencia_materias equimat
+         JOIN unicen.universidad_externa uniext
+              ON uniext.id_universidad_externa = equimat.id_universidad_externa AND uniext.unicodigo = 18377
+         JOIN unicen.nota nt ON equimat.id_materia = nt.id_materia AND nt.unicodigo = 18377 AND nt.id_plan_estudio = 96
+WHERE nt.paralelo = 'PRECONVALIDADO' OR nt.paralelo = 'CONVALIDADO';

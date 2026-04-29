@@ -95,3 +95,23 @@ SELECT * FROM information_schema.schemata; -- to list all the schemas in the dat
 
 -- GRANT USAGE ON SCHEMA hr TO user_name; -- to grant usage privilege on the hr schema to a specific user
 -- GRANT CREATE ON SCHEMA hr TO user_name; -- to grant create privilege on the hr schema to a specific user
+
+GRANT USAGE ON SCHEMA private_schema TO kevin;
+
+GRANT SELECT ON TABLE private_schema.secret_data TO kevin;
+
+GRANT SELECT ON ALL TABLES IN SCHEMA private_schema TO kevin;
+
+CREATE SCHEMA private_schema;
+
+CREATE TABLE  private_schema.secret_data (
+    id SERIAL PRIMARY KEY,
+    secret_info TEXT
+);
+
+INSERT INTO private_schema.secret_data (secret_info)
+SELECT 'This is a secret message' || generate_series(1, 5);
+
+
+
+SELECT * FROM private_schema.secret_data;

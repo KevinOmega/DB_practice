@@ -6,6 +6,15 @@ select * from unicen.calendario_academico;
 
 select * from unicen.evento_academico;
 
+SELECT * FROM unicen.estudiante_certificado where numero_certificado = '173361';
+
+BEGIN ;
+
+DELETE FROM unicen.estudiante_certificado WHERE numero_certificado = '173361';
+
+commit;
+
+SELECT paterno, materno, nombres from estudiante where unicodigo = 9842;
 
 ALTER TABLE unicen.calendario_academico ADD COLUMN id_sede integer;
 
@@ -17,14 +26,13 @@ WHERE id_gestion = 105 AND id_evento_academico IN (3,4,5,6,7,12,13) and id_sede 
 
 ROLLBACK;
 
-
+SELECT * from evento_academico;
 
 SELECT a.attname 
 FROM pg_index i
 JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey)
 WHERE i.indrelname = 'calendario_academico_pkey';
 
-'\d unicen.calendario_academico'
 
 SELECT * FROM unicen.estudiante where paterno LIKE  'DE %' and id_sede = 3;
 
