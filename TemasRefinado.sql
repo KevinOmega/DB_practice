@@ -1338,3 +1338,29 @@ select * from unicen.usuario WHERE unicodigo = 4137;
 
 
 select * from unicen.estudiantecareco where unicodigo = 35913;
+
+
+SELECT  * FROM unicen.carrera where nombre  = 'INGENIERÍA FINANCIERA';
+
+SELECT  * FROM unicen.plan_estudio where id_carrera = 20 and id_sede = 3;
+
+-- 113 cbba
+-- 136 lpz
+
+
+SELECT * FROM unicen.materia where cod_materia = 'IFI561';
+
+
+-- 1754 lpz
+-- 1690 stz
+-- 1401 cbba
+
+
+-- lpz
+SELECT * FROM unicen.tema_unicen where id_materia = 1754 and id_plan_estudio = 136;
+
+
+SELECT * FROM unicen.equivalencia_materia_unicen WHERE id_plan_estudio_origen = 113 and id_sede_origen = 1 and id_materia_origen = 1401;
+-- cbba
+
+SELECT  * FROM unicen.tema_unicen where id_materia = 1401 and id_plan_estudio = 113;
