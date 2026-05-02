@@ -175,7 +175,7 @@ FROM unicen.ciudad
 GROUP BY nombre, id_pais
 HAVING COUNT(*) > 1;
 
-select distrito, id_distrito COUNT(*) AS count from unicen.distrito
+select distrito, id_distrito, COUNT(*) AS count from unicen.distrito
 GROUP BY distrito, id_distrito HAVING COUNT(*) > 1;
 
 ALTER TABLE unicen.distrito
@@ -186,4 +186,107 @@ FROM unicen.distrito
 GROUP BY distrito, id_ciudad, id_sede
 HAVING COUNT(*) > 1;
 
+UPDATE unicen.usuario SET id_sede = 2 where unicodigo = 4137;
 
+SELECT paterno, materno, nombres, unicodigo, id_estudiante from unicen.estudiante where unicodigo = 35893;
+
+SELECT deu.id_deudas_contable,deu.unicodigo,deu.id_estudiante,isg.descripcion,deu.monto_deuda, ges.nombre, deu.estado, deu.freg, deu.observacion,
+       deu.id_usuario FROM deudas_contable deu
+JOIN gestion ges ON deu.id_gestion = ges.id_gestion
+JOIN item_seguimiento isg ON deu.id_item_seguimiento = isg.id_item_seguimiento
+where unicodigo = 35893
+ORDER BY ges.nombre DESC;
+
+BEGIN ;
+commit ;
+UPDATE unicen.deudas_contable SET monto_deuda = 0 WHERE id_deudas_contable = 390205;
+
+SELECT paterno,materno, nombres ,unicodigo,id_sede from unicen.estudiante where id_estudiante = 21661;
+
+
+
+CREATE OR REPLACE FUNCTION unicen.seiko_actualizartemasmateriaext(id_materia_ext INT, temas JSONB)
+RETURNS TABLE (message VARCHAR(100), type VARCHAR(50)) -- Aumentado a 100
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_id_sede INT;
+BEGIN
+    -- 1. Verificación eficiente con EXISTS (usando un JOIN interno para mayor limpieza)
+    IF EXISTS (
+        SELECT 1
+        FROM unicen.tema_asociar ta
+        INNER JOIN unicen.tema_externo te ON ta.id_tema_externo = te.id_tema_externo
+        WHERE te.id_materia_externa = id_materia_ext
+    ) THEN
+        RETURN QUERY SELECT
+            CAST('LOS TEMAS DE LA MATERIA CUENTAN CON UNA EQUIVALENCIA DEFINIDA' AS VARCHAR(100)),
+            CAST('INFO' AS VARCHAR(50));
+        RETURN; -- Buena práctica para salir inmediatamente
+    ELSE
+        -- 2. Obtener la sede y verificar que la materia exista
+        SELECT id_sede INTO v_id_sede
+        FROM unicen.materia_externa
+        WHERE id_materia_externa = id_materia_ext;
+
+        IF NOT FOUND THEN
+            RETURN QUERY SELECT CAST('LA MATERIA EXTERNA NO EXISTE' AS VARCHAR(100)), CAST('ERROR' AS VARCHAR(50));
+            RETURN;
+        END IF;
+
+        -- 3. Borrado seguro
+        DELETE FROM unicen.tema_externo WHERE id_materia_externa = id_materia_ext;
+
+        -- 4. Inserción de nuevos temas
+        WITH max_id AS (
+            -- NOTA: Lo ideal sería usar una SEQUENCE (e.g., NEXTVAL('seq_tema_externo')).
+            -- Solo usar MAX() si la concurrencia es nula.
+            SELECT COALESCE(MAX(id_tema_externo), 0) AS max_val
+            FROM unicen.tema_externo
+        ),
+        base_json AS (
+            SELECT
+                value->>'titulotema' AS titulo,
+                value->>'nomtema' AS nombre,
+                value->>'cont' AS contenido,
+                ROW_NUMBER() OVER () AS num_fila
+            FROM jsonb_array_elements(temas)
+        )
+        INSERT INTO unicen.tema_externo (
+            id_temaext,
+            id_tema_externo,
+            id_materia_externa,
+            titulo,
+            nombre,
+            contenido,
+            id_sede,
+            estado
+        )
+        SELECT
+            max_id.max_val + base_json.num_fila,
+            max_id.max_val + base_json.num_fila,
+            id_materia_ext,
+            base_json.titulo,
+            base_json.nombre,
+            base_json.contenido,
+            v_id_sede,
+            'ACTIVO'
+        FROM base_json
+        CROSS JOIN max_id;
+
+        -- 5. Retorno exitoso
+        RETURN QUERY SELECT
+            CAST('TEMAS ACTUALIZADOS CORRECTAMENTE' AS VARCHAR(100)),
+            CAST('SUCCESS' AS VARCHAR(50));
+    END IF;
+END;
+$$;
+SELECT * FROM unicen.materia_externa where id_materia_externa = 2240;
+
+SELECT * FROM unicen.tema_asociar where id_tema_externo IN (
+    SELECT id_tema_externo FROM unicen.tema_externo where id_materia_externa = 2240
+    );
+
+SELECT  * FROM unicen.congreso_plan_estudio where id_item_seguimiento = 10107;
+
+SELECT  * FROM unicen.item_seguimiento WHERE descripcion LIKE '%IV CONGRESO%';

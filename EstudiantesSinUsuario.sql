@@ -34,5 +34,70 @@ SELECT unicodigo, num_documento,nombres, paterno, materno from unicen.estudiante
 SELECT * FROM  unicen.usuarioest where unicodigo = 35978;
 select unicen.aut
 
-SELECT * FROM unicen.rol where nombre = 'ESTUDIANTE';
+UPDATE unicen.usuarioest SET id_rol = 5 where id_rol = 2;
+
+
+SELECT * from unicen.rol where nombre = 'ESTUDIANTE';
+-- 5 CBBA, 17 SCZ, 18 LPZ
+
+-- CAMBIAR CONTRASEÑA A MD5 DEL NUMERO DE DOCUMENTO DE LOS ESTUDIANTES QUE VARIA SU USUARIO DE SU DOCUMENTO
+
+SELECT * FROM unicen.estudiante where paterno = 'DORADO' and materno = 'SILVA';
+
+
+
+SELECT unicodigo,num_documento, md5(num_documento), pass from unicen.estudiante where unicodigo IN (
+    SELECT unicodigo FROM unicen.usuarioest WHERE id_sede = 3 and id_rol = 18
+) and pass <> md5(num_documento) and id_sede = 3;
+
+
+BEGIN;
+UPDATE unicen.estudiante SET pass = md5(num_documento) where unicodigo IN (
+    SELECT unicodigo FROM unicen.usuarioest WHERE id_sede = 3 and id_rol = 18
+) and pass <> md5(num_documento) and id_sede = 3;
+
+COMMIT;
+
+BEGIN;
+
+INSERT INTO usuarioest(unicodigo, id_rol, id_sede, activo )
+SELECT unicodigo, 17, 2, 'ACTIVO' FROM unicen.estudiante WHERE id_sede = 2 AND unicodigo NOT IN (
+    SELECT unicodigo FROM unicen.usuarioest WHERE id_sede = 2
+) and unicodigo IN (
+    SELECT unicodigo from unicen.estudiantecareco where activo = 'ACTIVO' AND id_sede = 2
+) and activo = 'ACTIVO' AND pass = md5(num_documento) AND id_sede = 2;
+
+COMMIT;
+
+SELECT * FROM unicen.usuarioest where unicodigo = 16050;
+
+ROLLBACK;
+
+SELECT unicodigo, num_documento from unicen.estudiante where unicodigo = 19059;
+
+UPDATE unicen.estudiante SET pass = md5(num_documento) where unicodigo = 19059;
+
+select * from unicen.usuarioest where unicodigo = 19059;
+
+
+select * from unicen.usuarioest where unicodigo IN (
+    18492,
+35948,
+33761,
+36005,
+12712,
+16644
+)
+
+
+SELECT id_sede,num_documento,nombres from unicen.estudiante where unicodigo = 23855;
+
+
+SELECT * FROM unicen.usuarioest where id_sede = 1 and unicodigo IN (
+    SELECT unicodigo FROM unicen.estudiante where id_sede <> 1
+)
+
+DELETE FROM unicen.usuarioest where id_sede = 1 and unicodigo IN (
+    SELECT unicodigo FROM unicen.estudiante where id_sede <> 1
+);
 

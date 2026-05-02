@@ -32,3 +32,31 @@ VALUES (26, 55, 3, 'ACTIVO');
 -- 140, 55
 SELECT * from unicen.componente where path11 = '/personal' or path11= '/reprrhhlistadocentes';
 SELECT * FROM unicen.componente where path11 LIKE '/rep%';
+select *
+from unicen.rol where id_rol = 68;
+
+BEGIN;
+update unicen.usuario SET id_sede = 2 where unicodigo = 4137;
+commit ;
+SELECT unicodigo, num_documento, paterno,materno , nombres from unicen.personal where nombres = 'LITCY ANDREA';
+
+SELECT * FROM unicen.usuario where unicodigo = 4342;
+
+SELECT * FROM unicen.rol where id_sede = 3;
+
+
+SELECT * from unicen.rol where id_rol = 35;
+SELECT * FROM unicen.estudiante where unicodigo = 4342;
+
+SELECT * FROM unicen.usuario where unicodigo = 4137;
+
+
+SELECT * FROM unicen.componente where path11 LIKE '%bac%';
+
+SELECT * FROM  unicen.componente where path11 LIKE '%contrato%';
+
+
+SELECT * FROM unicen.menu;
+
+
+SELECT * FROM unicen.usuario where  unicodigo = 4137;
