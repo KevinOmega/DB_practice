@@ -141,12 +141,12 @@ ORDER  BY titulo;
 -- Verificación: temas propagados por el trigger (1348)
 -- ============================================================
 SELECT t.id_tema_unicen, t.id_plan_estudio, t.id_materia, t.id_sede,
-       t.titulo, t.nombre, t.id_tema_unicen_origen
+       t.titulo, t.nombre, t.id_tema_unicen_origen, t.contenido
 FROM   unicen.tema_unicen t
 WHERE  t.id_tema_unicen_origen IN (
     SELECT id_tema_unicen
     FROM   unicen.tema_unicen
-    WHERE  id_materia = 1418 AND id_plan_estudio = 113 AND id_sede = 1
+    WHERE  id_materia = 1386 AND id_plan_estudio = 113 AND id_sede = 1
 )
 ORDER  BY t.id_tema_unicen_origen, t.id_sede;
 
@@ -194,19 +194,79 @@ SELECT  * FROM unicen.tema_unicen where id_materia = 1401 and id_plan_estudio = 
 SELECT * FROM unicen.materia where cod_materia = 'CPA552';
 
 
-SELECT * FROM unicen.tema_unicen where id_materia = 1386 and id_plan_estudio = 113;
+SELECT * FROM unicen.tema_unicen where id_materia = 1386 and id_plan_estudio = 113 ORDER BY nombre;
 
 
 BEGIN;
 
 UPDATE unicen.tema_unicen 
-SET contenido = '1.1.	CONCEPTOS 
-1.2.	DEFINICIONES 
-1.3.	ESTRUCTURA DEL SISTEMA FINANCIERO
-1.3.1. CONSEJO DE ESTABILIDAD FINANCIERA 
-1.3.2. BANCO CENTRAL DE BOLIVIA
-1.3.3. AUTORIDAD DE SUPERVISIÓN DEL SISTEMA FINANCIERO
-1.4	ENTIDADES FINANCIERAS
-    1.4.1. DEL ESTADO
-    1.4.2. PRIVADAS
-' WHERE id_tema_unicen = 2757;
+SET contenido = 
+'
+1.1.    CONCEPTOS 
+1.2.    DEFINICIONES 
+1.3.    ESTRUCTURA DEL SISTEMA FINANCIERO
+1.3.1.  CONSEJO DE ESTABILIDAD FINANCIERA 
+1.3.2.  BANCO CENTRAL DE BOLIVIA
+1.3.3.  AUTORIDAD DE SUPERVISIÓN DEL SISTEMA FINANCIERO
+1.4.    ENTIDADES FINANCIERAS
+1.4.1.  DEL ESTADO
+1.4.2.  PRIVADAS'
+WHERE id_tema_unicen = 2757;
+
+UPDATE unicen.tema_unicen 
+SET contenido = 
+'
+2.1.   MARCO NORMATIVO
+2.1.1. LICENCIA DE FUNCIONAMIENTO
+2.1.2. CAPITAL MÍNIMO REQUERIDO
+2.2.   PROCEDIMIENTO PARA LA CONSTITUCIÓN DE UNA ENTIDAD FINANCIERA
+2.3.   OTROS ELEMENTOS PARA SU CONTABILIZACIÓN
+2.4.   EJEMPLO Y RESOLUCIONES PRÁCTICAS 
+' WHERE id_tema_unicen = 2758;
+
+
+UPDATE unicen.tema_unicen 
+SET contenido =
+'3.1.    ESTRUCTURA ORGANIZACIONAL
+3.1.1.  ENTIDADES FINANCIERAS BANCARIAS
+3.1.2.  COOPERATIVAS DE AHORRO Y CRÉDITO
+3.3.    OTRAS ENTIDADES FINANCIERAS
+3.4.    MANUAL DE CUENTAS
+3.4.1.  ESTRUCTURA
+3.4.2.  CONTENIDO 
+3.5.    RECOPILACIÓN DE NORMAS
+3.5.1.  ESTRUCTURA
+3.5.2.  CONTENIDO'
+WHERE id_tema_unicen = 2759;
+
+UPDATE unicen.tema_unicen 
+SET contenido = 
+'4.1.   OPERACIONES ACTIVAS
+4.1.1. CLASIFICACIÓN POR TIPO DE OPERACIÓN
+4.1.2. CLASIFICACIÓN POR EL PLAZO
+4.2.   OPERACIONES PASIVAS
+4.2.1. CLASIFICACIÓN POR TIPO DE OPERACIÓN
+4.2.1. CLASIFICACIÓN POR EL PLAZO
+4.3.   OPERACIONES CONTINGENTES
+4.4.   OPERACIONES DE SERVICIOS'
+WHERE id_tema_unicen = 2760;
+
+
+UPDATE unicen.tema_unicen 
+SET contenido = 
+'5.1.   OPERACIONES DE CARTERA
+5.1.1. MARCO NORMATIVO
+5.1.2. EJEMPLO PRESTAMOS A PLAZO FIJO EN MN Y ME
+5.1.3. EJEMPLO PRESTAMOS AMORTIZABLES EN MN Y ME
+5.1.4. RESOLUCIONES PRÁCTICAS
+5.2.   OBLIGACIONES CON EL PÚBLICO
+5.2.1. MARCO NORMATIVO
+5.2.2. EJEMPLO DE CUENTAS DE AHORRO MN Y ME
+5.2.3. EJEMPLO DE CUENTAS A PLAZO MN Y ME
+5.2.4. RESOLUCIONES PRÁCTICAS 
+5.3.   OTRAS OPERACIONES ACTIVAS, PASIVAS Y DE SERVICIOS	
+5.4.   ESTADOS FINANCIEROS
+5.4.1. MARCO NORMATIVO
+5.4.2. ESTADOS DE PRESENTACIÓN
+5.4.3. ESTADOS DE PUBLICACIÓN'
+WHERE id_tema_unicen = 2761;
